@@ -1,0 +1,154 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[fleqn]{nccmath}
+\usepackage{enumitem}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz,pgfplots,tikz-3dplot}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{braket}
+\usepackage{esvect,esint}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+\usepackage{titling}
+\usepackage{titlesec} % Section headings
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+\titlespacing{\section}{0pt}{10pt}{0pt}
+\titlespacing{\subsection}{0pt}{10pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{0pt}
+
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    margin=1in, % Margin size, obviously.
+    top = 1in,
+    bottom = 0.5in,
+}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Ethan Pham}
+\rhead{\thepage}
+
+\usetikzlibrary{shapes, calc, arrows, arrows.meta, patterns, decorations.markings, decorations.pathmorphing, patterns.meta}
+
+\def\centerarc[#1](#2)(#3:#4:#5)% Syntax: [draw options] (center) (initial angle:final angle:radius)
+    { \draw[#1] ($(#2)+({#5*cos(#3)},{#5*sin(#3)})$) arc (#3:#4:#5); }
+
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\graphicspath{ {./Images/} }
+
+\definecolor{string}{RGB}{230, 219, 116}
+\definecolor{comment}{RGB}{117, 113, 94}
+\definecolor{normal}{RGB}{0,0,0}
+\definecolor{identifier}{RGB}{166, 226, 46}
+
+\lstset{
+	language=python,                			% choose the language of the code
+  	numbers=left,                   		% where to put the line-numbers
+  	stepnumber=1,                   		% the step between two line-numbers.        
+  	numbersep=5pt,                  		% how far the line-numbers are from the code
+  	numberstyle=\tiny\color{black}\ttfamily,
+  	showspaces=false,               		% show spaces adding particular underscores
+  	showstringspaces=false,         		% underline spaces within strings
+  	showtabs=false,                 		% show tabs within strings adding particular underscores
+  	tabsize=4,                      		% sets default tabsize to 2 spaces
+  	captionpos=b,                   		% sets the caption-position to bottom
+  	breaklines=true,                		% sets automatic line breaking
+  	title=\lstname,                 		% show the filename of files included with \lstinputlisting;
+  	basicstyle=\color{normal}\ttfamily,					% sets font style for the code
+  	keywordstyle=\color{magenta}\ttfamily,	% sets color for keywords
+  	stringstyle=\color{string}\ttfamily,		% sets color for strings
+  	commentstyle=\color{comment}\ttfamily,	% sets color for comments
+  	emph={format_string, eff_ana_bf, permute, eff_ana_btr},
+  	emphstyle=\color{identifier}\ttfamily
+}
+
+% Calculus Commands
+\newcommand{\infint}{\int_{-\infty}^{\infty}}
+\newcommand{\fd}[2]{\dfrac{\mathrm{d}^{#2}}{\mathrm{d}#1^{#2}}} % For full derivatives. \fd{variable}{number}
+\newcommand{\ffd}[3]{\dfrac{\mathrm{d}^{#3}#1}{\mathrm{d}#2^{#3}}} % For full derivatives with function. \ffd{function}{variable}{number}
+\newcommand{\pd}[2]{\dfrac{\partial^{#2}}{\partial #1^{#2}}} % For partial derivatives. \pd{variable}{number}
+\newcommand{\fpd}[3]{\dfrac{\partial^{#3}#1}{\partial #2^{#3}}} % For partial derivatives with function. \fpd{function}{variable}{number}
+
+
+% Number symbols
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+
+% Vector Commands
+\renewcommand{\vv}[1]{\bm{\mathrm{#1}}}
+\newcommand{\uvv}[1]{\hat{\bm{\mathrm{#1}}}}
+\newcommand{\dvv}[1]{\dot{\bm{\mathrm{#1}}}}
+\newcommand{\ddvv}[1]{\ddot{\bm{\mathrm{#1}}}}
+\newcommand{\grad}{\bm{\mathrm{\nabla}}}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+% Trig Commands
+\newcommand{\arccot}{\operatorname{arccot}}
+\newcommand{\csch}{\operatorname{csch}}
+\newcommand{\sech}{\operatorname{sech}}
+
+% QED
+\newcommand{\qed}{\tag*{\(\square\)}}
+
+% Typing Commands
+\newcommand{\note}[1]{\color{red}#1\color{black}}
+
+
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{colorbrewer}
+
+\begin{document}
+\section*{Graviational Lensing for a Schwarzschild Black Hole using Backwards Ray Tracing}
+	General relativity says that matter tells space how to bend, and space tells matter how to move. Assuming a cosmological constant of zero, this relation is governed by the Einstein field equations:
+	\begin{align}
+		R_{\mu\nu}-\frac{1}{2}R=8\pi G T_{\mu\nu}
+	\end{align}
+	The Schwarzschild solution is the simplest case; a completely stationary mass centered at the origin, whose metric (using \(-,+,+,+\)) in spherical coordinates is well known to be
+	\begin{align}
+		\mathrm{d}s^{2}=-\left(1-\frac{r_{s}}{r}\right)\mathrm{d}t^{2}+\left(1-\frac{r_{s}}{r}\right)^{-1}\mathrm{d}r^{2}+r^{2}\mathrm{d}\theta^{2}+r^{2}\sin^{2}\theta\mathrm{d}\phi^{2}
+	\end{align}
+	The spherical symmetry of the problem allows us to calculate the geodesics in a plane (\(\theta=\pi/2\)). We can write a pair of differential equations for \(r\) and \(\phi\) in terms of the conserved quantities energy \(E\) and angular momentum \(L\):
+	\begin{align}\label{eq:eom}
+		\begin{aligned}
+			\ddot{\phi}&=\frac{L}{r^{2}}, & \ddot{r}&=-\frac{R_{s}}{2r^{2}}\left(\frac{L^{2}}{r^{2}}+\epsilon\right)+\frac{L^{2}}{r^{3}}\left(1-\frac{R_{s}}{r}\right)
+		\end{aligned}
+	\end{align}
+	Where the quantity \(\epsilon=0\) since light travels on null geodesics. These equations can be solved numerically on a computer to generate the path that light takes in the presence of a Schwarzschild black hole. 
+	
+\subsection*{Approach}
+Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the Runge-Kutta-Fehlberg method for the dynamic time step. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. We make an image by sending out rays with initial conditions backwards from the start plane toward the black hole, let it do whatever it does and eventually one of three outcomes can occur. One, it enters the black hole, which we set that pixel to black. Two, it hits the image in the back, in which we map take the color of the pixel and map it back to where the ray started, or it goes out of bounds in which we also set to black (or some other color for debugging). This, in theory, should allow us to get the same distortion effects that are obtained using lensing equations and angles of deflection (which seems to be the most common way to do this). 
+
+\subsection*{Objectives}
+\begin{enumerate}
+	\item Simulate and render a 3D trajectory for a single photon.
+	\item Check simulation by using known solutions (i.e. ICs where light obrits the black hole are known, so setting those in the simulation should match).
+	\item Generate an image displaying the lensing effect using a ``background galaxy" (which will probably be an image off of Google). Or if this is too computationally expensive, use a lower resolution image. 
+	\item Compare the results with other (physically correct) lensing simulations that use the angle of deflection and see how well it matches.
+	\item If time allows, translate or tilt the image it at an angle to simulate changing the perspective of the lensing and make a short video displaying the lensing effect.
+\end{enumerate}
+
+	
+	
+	
+	
+\end{document}

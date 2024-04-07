@@ -136,7 +136,14 @@
 	Where the quantity \(\epsilon=0\) since light travels on null geodesics. These equations can be solved numerically on a computer to generate the path that light takes in the presence of a Schwarzschild black hole. 
 	
 \subsection*{Approach}
-Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the Runge-Kutta-Fehlberg method for the dynamic time step. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. We make an image by sending out rays with initial conditions backwards from the start plane toward the black hole, let it do whatever it does and eventually one of three outcomes can occur. One, it enters the black hole, which we set that pixel to black. Two, it hits the image in the back, in which we map take the color of the pixel and map it back to where the ray started, or it goes out of bounds in which we also set to black (or some other color for debugging). This, in theory, should allow us to get the same distortion effects that are obtained using lensing equations and angles of deflection (which seems to be the most common way to do this). 
+Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the Runge-Kutta-Fehlberg method for the dynamic time step. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. To make a lensed image, we start with an original image and a plane representing the final, distorted image observed on opposite sides of the black hole. Then, we imagine a ray, representing a photon, hits the plane at some point/pixel while perpendicular to the plane. We then trace the ray backwards from this pixel. When the ray goes backwards, there are 3 possible results:
+\begin{enumerate}
+	\item It enters the black hole, in which case, the pixel will be set to black.
+	\item  It shoots off to infinity, in which case, the pixel will be set to black. Obviously we can't simulate it for infinite time, but this is the physical idea represented by the ray going out of whatever bounds we choose.
+(Note: While debugging, we may set the pixel to a different color depending on whether it enters the black hole or goes out of bounds.)
+	\item It hits a pixel on the original image, in which case, the pixel on the plane which we were tracing back from is set to be the same color as the pixel which the pixel of the original image which the backtraced ray hit.
+\end{enumerate}
+This, in theory, should allow us to get the same distortion effects that are obtained using lensing equations and angles of deflection (our approach seems to be the most common way to do this). 
 
 \subsection*{Objectives}
 \begin{enumerate}

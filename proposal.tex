@@ -24,9 +24,9 @@
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
+    filecolor=magenta,
     linkcolor=cyan,
-    filecolor=magenta,      
-    %urlcolor=cyan,
+    citecolor = red,
     pdftitle={Final Project Proposal}
     }
 \usepackage{titling}
@@ -134,7 +134,7 @@
 		\mathrm{d}s^{2}=-\left(1-\frac{r_{s}}{r}\right)\mathrm{d}t^{2}+\left(1-\frac{r_{s}}{r}\right)^{-1}\mathrm{d}r^{2}+r^{2}\mathrm{d}\theta^{2}+r^{2}\sin^{2}\theta\mathrm{d}\phi^{2}
 	\end{align}
 	The spherical symmetry of the problem allows us to calculate the geodesics in a plane (\(\theta=\pi/2\)). We can write a pair of differential equations for \(r\) and \(\phi\) in terms of the conserved quantities energy \(E\) and angular momentum \(L\):
-	\begin{align}\label{eq:eom}
+	\begin{align} \label{eq:eom}
 		\begin{aligned}
 			\ddot{\phi}&=\frac{L}{r^{2}}, & \ddot{r}&=-\frac{R_{s}}{2r^{2}}\left(\frac{L^{2}}{r^{2}}+\epsilon\right)+\frac{L^{2}}{r^{3}}\left(1-\frac{R_{s}}{r}\right)
 		\end{aligned}
@@ -146,7 +146,7 @@
 	The lensing effect should be reproducible using ray tracing methods as well. By considering each pixel of an image (as the background galaxy) and casting rays out toward the black hole and hit some target plane (observer) to map the pixels of the image their corresponding locations in the target plane where the trajectories can be obtained using the light geodesics discussed above.
 	
 \subsection*{Approach}
-Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the either the \hyperlink{https://personal.math.ubc.ca/~feldman/m256/richard.pdf}{Richardson extrapolation} (along with the usual Runge-Kutta 4 method) or the \hyperlink{https://en.wikipedia.org/wiki/Runge-Kutta-Fehlberg_method}{Runge-Kutta-Fehlberg} method (also known as RK45) for dynamic time stepping and increased rate of convergence, whichever ends up working. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. 
+Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the either the Richardson extrapolation \cite{Richardson extrapolation} (along with the usual Runge-Kutta 4 method) or the Runge-Kutta-Fehlberg method (also known as RK45) for dynamic time stepping and increased rate of convergence, whichever ends up working. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. 
 
 The ray tracing method used will be backwards ray tracing. The reasoning is as follows: ray tracing involves casting out several rays, then letting them hit surfaces, bounce around, and so on until they reach the position of some observer. This process is described as forward ray tracing, and is generally very inefficient. This is because most of the rays cast from the light source will never actually reach the camera, perhaps being reflected to somewhere far off or obstructed by some black body. In turn this uses a lot of unnecessary computation and so to remedy this, we take rays cast from the observer and track what they hit instead. These rays are guaranteed to have ``hit" the camera, since they started there to begin with, but more formally: this solution works because running time backwards (\(t\to -t\)) will give the effect of reversing the direction the ray took to get to the object. In other words, it makes it look like the object emitted the rays which then bounced around and hit the camera.
 
@@ -180,7 +180,7 @@ In theory, this should allow us to get the same distortion effects that are obta
 	\item Simulate and render a 3D trajectory for a single photon.
 	\item Check simulation by using known solutions (i.e. ICs where light orbits the black hole are known, so setting those in the simulation should match).
 	\item Generate an image displaying the lensing effect using a ``background galaxy" (which will probably be an image off of Google). Or if this is too computationally expensive, use a lower resolution image. Using a checkerboard pattern as the image will allow us to clearly see the lensing effect. 
-	\item Compare the results with other (physically correct) lensing simulations (like this one from \hyperlink{https://www.youtube.com/watch?v=k6JHryhlNVk}{NASA}, \hyperlink{https://lweb.cfa.harvard.edu/~bmcleod/castlepress.html}{Harvard}, or some of the examples on \hyperlink{https://en.wikipedia.org/wiki/Gravitational_lens}{Wikipedia}) and see how well it matches.
+	\item Compare the results with other (physically correct) lensing simulations (like this one from NASA \cite{NASA}, Harvard \cite{Harvard}, or some of the examples on Wikipedia \cite{Wikipedia}) and see how well it matches.
 \end{enumerate}
 
 \subsection*{Stretch Goals}
@@ -194,6 +194,26 @@ In theory, this should allow us to get the same distortion effects that are obta
 	\item Ethan approves of this proposal!
 	\item Jo approves of this proposal!
 \end{itemize}
+
+\newpage
+\begin{thebibliography}{5}
+	\bibitem{Richardson extrapolation}
+	Joel Feldman (2000) \url{https://personal.math.ubc.ca/~feldman/m256/richard.pdf}
+	
+	\bibitem{RK45}
+	Gurevich, Svetlana (2017) \url{https://www.uni-muenster.de/imperia/md/content/physik_tp/lectures/ss2017/numerische_Methoden_fuer_komplexe_Systeme_II/rkm-1.pdf}
+	
+	\bibitem{NASA}
+	STScI/Frank Summers (2003) \url{https://www.youtube.com/watch?v=k6JHryhlNVk}
+	
+	\bibitem{Harvard}
+	\url{https://lweb.cfa.harvard.edu/~bmcleod/castlepress.html}
+	
+	\bibitem{Wikipedia}
+	\url{https://en.wikipedia.org/wiki/Gravitational_lens}
+	
+	
+\end{thebibliography}
 	
 	
 	

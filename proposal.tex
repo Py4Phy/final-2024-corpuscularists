@@ -148,7 +148,7 @@
 \subsection*{Approach}
 Figuring out the photon trajectories comes down to integrating the equations of motion \ref{eq:eom} with the either the \hyperlink{https://personal.math.ubc.ca/~feldman/m256/richard.pdf}{Richardson extrapolation} (along with the usual Runge-Kutta 4 method) or the \hyperlink{https://en.wikipedia.org/wiki/Runge-Kutta-Fehlberg_method}{Runge-Kutta-Fehlberg} method (also known as RK45) for dynamic time stepping and increased rate of convergence, whichever ends up working. The energy \(E\) and angular momentum \(L\) are both determined by initial conditions. 
 
-The ray tracing method used will be backwards ray tracing. The reasoning is as follows: ray tracing involves casting out several rays, then letting hit surfaces, bounce around, and so on until they reach the position of some observer. This process is described as forward ray tracing, and is generally very inefficient. This is because most of the rays cast from the light source will never actually reach the camera, perhaps being reflected to somewhere far off or obstructed by some black body. In turn this uses a lot of unnecessary computation and so to remedy this, we take rays cast from the observer and track what they hit instead. These rays are guaranteed to have ``hit" the camera, since they started there to begin with, but more formally: this solution works because running time backwards (\(t\to -t\)) will give the effect of reversing the direction the ray took to get to the object. In other words, it makes it look like the object emitted the rays which then bounced around and hit the camera.
+The ray tracing method used will be backwards ray tracing. The reasoning is as follows: ray tracing involves casting out several rays, then letting them hit surfaces, bounce around, and so on until they reach the position of some observer. This process is described as forward ray tracing, and is generally very inefficient. This is because most of the rays cast from the light source will never actually reach the camera, perhaps being reflected to somewhere far off or obstructed by some black body. In turn this uses a lot of unnecessary computation and so to remedy this, we take rays cast from the observer and track what they hit instead. These rays are guaranteed to have ``hit" the camera, since they started there to begin with, but more formally: this solution works because running time backwards (\(t\to -t\)) will give the effect of reversing the direction the ray took to get to the object. In other words, it makes it look like the object emitted the rays which then bounced around and hit the camera.
 
 \begin{figure}[H]
 	\centering
@@ -166,19 +166,19 @@ The ray tracing method used will be backwards ray tracing. The reasoning is as f
 	\caption{Backward Ray Tracing}
 \end{figure}
 
-In particular, time reversal works for light geodesics, as the they are (with valid initial conditions) unique for the Schwarchild metric. We will make an image by sending out rays with initial conditions backwards from the start plane toward the black hole, let it do whatever it does and eventually one of four outcomes can occur. 
+In particular, time reversal works for light geodesics, as the they are (with valid initial conditions) unique for the Schwarzschild metric. We will make an image by sending out rays with initial conditions backwards from the start plane toward the black hole, let it do whatever it does and eventually one of four outcomes can occur. 
 \begin{enumerate}
 	\item It enters the black hole, which we set that pixel to black and terminate the calculation, since once inside the black hole it can never leave.
 	\item It hits the image, in which case we take the color of the pixel and map it back to where the ray started.
-	\item It shoots off to infinity (out of bounds)in which we also set to black. (Note: While debugging, we may set the pixel to a different color depending on whether it enters the black hole or goes out of bounds.)
+	\item It shoots off to infinity (out of bounds) in which case we also set to black. (Note: While debugging, we may set the pixel to a different color depending on whether it enters the black hole or goes out of bounds.)
 	\item It happens to be a special trajectory (or near one) whose solutions end up orbiting the black hole indefinitely, or for a long period of time, which can be solved by enforcing a limit to the number of iterations in the integrator.
 \end{enumerate}
-In theory, should allow us to get the same distortion effects that are obtained using lensing equations and angles of deflection (which seems to be the most common way to do this). 
+In theory, this should allow us to get the same distortion effects that are obtained using lensing equations and angles of deflection (which seems to be the most common way to do this). 
 
 \subsection*{Objectives}
 \begin{enumerate}
 	\item Simulate and render a 3D trajectory for a single photon.
-	\item Check simulation by using known solutions (i.e. ICs where light obrits the black hole are known, so setting those in the simulation should match).
+	\item Check simulation by using known solutions (i.e. ICs where light orbits the black hole are known, so setting those in the simulation should match).
 	\item Generate an image displaying the lensing effect using a ``background galaxy" (which will probably be an image off of Google). Or if this is too computationally expensive, use a lower resolution image. Using a checkerboard pattern as the image will allow us to clearly see the lensing effect. 
 	\item Compare the results with other (physically correct) lensing simulations (like this one from \hyperlink{https://www.youtube.com/watch?v=k6JHryhlNVk}{NASA}, \hyperlink{https://lweb.cfa.harvard.edu/~bmcleod/castlepress.html}{Harvard}, or some of the examples on \hyperlink{https://en.wikipedia.org/wiki/Gravitational_lens}{Wikipedia}) and see how well it matches.
 \end{enumerate}
@@ -192,7 +192,7 @@ In theory, should allow us to get the same distortion effects that are obtained 
 \subsection*{Approval}
 \begin{itemize}
 	\item Ethan approves of this proposal!
-	\item 
+	\item Jo approves of this proposal!
 \end{itemize}
 	
 	

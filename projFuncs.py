@@ -45,10 +45,10 @@ def rk45(u, f, t, h, Tol = 1e-3):
 	k6 = h*f(t+A[5]*h, u+B[5,0]*k1+B[5,1]*k2+B[5,2]*k3+B[5,3]*k4+B[5,4]*k5)
 
 	uAvg = u + CH[0]*k1 + CH[1]*k2 + CH[2]*k3 + CH[3]*k4 + CH[4]*k5 + CH[5]*k6 # Average
-	# TE = np.absolute(CT[0]*k1 + CT[1]*k2 + CT[2]*k3 + CT[3]*k4 + CT[4]*k5 + CT[5]*k6) # Truncation Error
-	# hnew = 0.9*h*(Tol/np.max(TE))**(1/5)
-	uLow = 
-	uHigh = 
+	TE = np.absolute(CT[0]*k1 + CT[1]*k2 + CT[2]*k3 + CT[3]*k4 + CT[4]*k5 + CT[5]*k6) # Truncation Error
+	hnew = 0.9*h*(Tol/np.max(TE))**(1/5)
+	#uLow = 
+	#uHigh = 
 
 	if np.max(TE) > Tol:
 		return rk45(u, f, t, hnew, Tol)
@@ -62,13 +62,13 @@ def F(t, u):
 	ax, ay, az = np.array([0, -9.8, 0], dtype = np.float64)
 	return np.array([vx, vy, vz, ax, ay, az])
 
-def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([10, 10, 0], dtype = np.float64), h=1):
+def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 50, 0], dtype = np.float64), h=5):
 	t = 0
 	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
 	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
 	counter = 0
 	MaxCount = 10000
-	while (t < 2.04) and counter < MaxCount:
+	while (t < 10) and counter < MaxCount:
 		t += h
 		counter += 1
 		u[:] = rk45(u, F, t, h)

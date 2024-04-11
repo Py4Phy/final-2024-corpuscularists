@@ -12,3 +12,9 @@ array_file = 'usable.npy' # 0utput file with the format .npy
 image = Im.open(image_file)
 image = np.array(image)
 np.save(array_file, image)
+
+def imageTakeInner():
+    image_file
+    image = Im.open(image_file)
+    image = np.array(image)
+    return image

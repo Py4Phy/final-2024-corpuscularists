@@ -58,26 +58,46 @@ def rk45(u, f, t, h, Tol = 1e-3):
 
 def rk4RE(u, f, t, h):
 	p = 4
-	eps_rel = 1e-6
+	eps_rel = 1e-8
 	eps_abs = 1e-15
 	# u1 using usual RK4 with two half-time steps
+
 	u1 = rk4(u, f, t, h/2)
-	u1 = u1 + rk4(u1, f, t, h/2)
+	u1 = rk4(u1, f, t+h/2, h/2)
 
 	# u2 with one timestep
-	u2 = rkt(u, f, t, h)
+	u2 = rk4(u, f, t, h)
 
-	lte = 2^p/(2^p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
+	lte = 2**p/(2**p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
 	re = lte/(eps_rel*abs(u) + eps_abs)
-	hnew = h/re^(1/(p+1)) # time step adjustment
+	re = np.max(np.where(re==0, 1, re)) # Replace zeros with ones to avoid division by zero
+	hnew = h/re**(1/(p+1)) # time step adjustment
 
-	return hnew, rk4(u, f, t, hnew)
+	if np.max(re)>2:
+		return rk4RE(u, f, t, hnew)
+	else:
+		return hnew, rk4(u, f, t, hnew)
 
-# Acceleration
+	'''
+	while np.max(re)>2
+		hnew = hnew/re**(1/(p+1)) # time step adjustment
+		u1 = rk4(u, f, t, h/2)
+		u1 = rk4(u1, f, t+h/2, h/2)
+		u2 = rk4(u, f, t, h)
+		lte = 2**p/(2**p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
+		re = lte/(eps_rel*abs(u) + eps_abs)
+		re = np.where(re==0, 1, re) # Replace zeros with ones to avoid division by zero
+	'''
+
+
+
+# Acceleration testing
 def F(t, u):
 	x, y, z, vx, vy, vz = u
-	# vel = np.array([vx, vy, vz])
-	ax, ay, az = np.array([0, -9.8, 0], dtype = np.float64)
+	vx = x**2
+	vy = 0
+	vz = 0
+	ax, ay, az = np.array([0, 0, 0], dtype = np.float64)
 	return np.array([vx, vy, vz, ax, ay, az])
 
 # Equations of motion for the Schwarchild Metric
@@ -85,7 +105,7 @@ def F_schwarz(t, u): # Note, this takes in SPHERICAL COORDINATES and outputs the
 	r, theta, phi, vr, vtheta, vphi = u
 	# vel = np.array([vx, vy, vz])
 	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
-	atheta = 
+	atheta = 0
 	aphi = 0
 
 
@@ -104,18 +124,32 @@ def sph2cart(r,theta,phi):
 	z = r*cos(theta)
 	return x,y,z
 
-def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 50, 0], dtype = np.float64), h=1e-3):
+def integrate_EOM(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=1):
 	t = 0
 	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
 	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
 	counter = 0
 	MaxCount = 10000
-	while (t < 10) and counter < MaxCount:
-		t += h
+	while (t < 0.9) and counter < MaxCount:
 		counter += 1
-		h, u[:] = rk4(u, F, t, h)
+		h, u[:] = rk4RE(u, F, t, h)
+		t += h
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr
 
+'''
+# Debugging
+def testing(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=0.15):
+	t = 0
+	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
+	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
+	h, u[:] = rk4RE(u, F, t, h)
 
+	t += h
+	uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
+	print(uList)
+	return uList
+
+testing()
+'''

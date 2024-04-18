@@ -96,9 +96,14 @@ def cart2sph(x,y,z,vx,vy,vz):
 	r = np.sqrt(x**2+y**2+z**2)
 	theta = np.arccos(z/r)
 	phi = np.sign(y)*np.arccos(x/np.sqrt(x**2+y**2))
+	rho = np.sqrt(x**2+y**2)
+	sinTheta = rho/r
+	cosTheta = z/r
+	sinPhi = y/rho
+	cosPhi = x/rho
 	vr = (x*vx + y*vy + z*vz)/r
-	vtheta = np.sum(np.array([vx,vy,vz])*np.array([np.cos(theta)*np.cos(phi),np.cos(theta)*np.sin(phi),-np.sin(theta)]))/r # come back and make these trigonometric functions into functions of x, y, z
-	vphi = np.sum(np.array([vx,vy,vz])*np.array([-np.sin(phi),np.cos(phi),0]))/np.sqrt(x**2 + y**2)
+	vtheta = (vx*cosTheta*cosPhi + vy*cosTheta*sinPhi - vz*sinTheta)/r
+	vphi = (-vx*sinPhi + vy*cosPhi)/rho
 	return r,theta,phi,vr,vtheta,vphi
 
 def sph2cart(r,theta,phi,vr,vtheta,vphi=0):

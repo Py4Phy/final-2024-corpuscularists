@@ -92,16 +92,16 @@ def F_schwarz(t, u): # Note, this takes in SPHERICAL COORDINATES and outputs the
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
 
 # Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
-def cart2sph(x,y,z,vx=0,vy=0,vz):
+def cart2sph(x,y,z,vx,vy,vz):
 	r = np.sqrt(x**2+y**2+z**2)
 	theta = np.arccos(z/r)
 	phi = np.sign(y)*np.arccos(x/np.sqrt(x**2+y**2))
 	vr = (x*vx + y*vy + z*vz)/r
-	vtheta = np.sum(np.array(vx,vy,vz)*np.array(np.cos(theta)*np.cos(phi),np.cos(theta)*np.sin(phi),-np.sin(theta)))/r # come back and make these trigonometric functions into functions of x, y, z
-	vphi = np.sum(np.array(vx,vy,vz)*np.array(-np.sin(phi),np.cos(phi),0))/np.sqrt(x**2 + y**2)
+	vtheta = np.sum(np.array([vx,vy,vz])*np.array([np.cos(theta)*np.cos(phi),np.cos(theta)*np.sin(phi),-np.sin(theta)]))/r # come back and make these trigonometric functions into functions of x, y, z
+	vphi = np.sum(np.array([vx,vy,vz])*np.array([-np.sin(phi),np.cos(phi),0]))/np.sqrt(x**2 + y**2)
 	return r,theta,phi,vr,vtheta,vphi
 
-def sph2cart(r,theta,phi,vr,vtheta,vphi):
+def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 	x = r*np.sin(theta)*np.cos(phi)
 	y = r*np.sin(theta)*np.sin(phi)
 	z = r*np.cos(theta)

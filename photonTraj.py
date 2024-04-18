@@ -12,7 +12,8 @@ from PIL import Image as Im
 t_max = 57
 defaultTimeStep = 1e-3
 MaxCount = 10000
-R = 1 # schwarzchild radius
+m = 3.9239e44 # Mass
+Rs = 2*m # Schwarzschild Radius
 pixel_length = 1
 z1 = -1000 # location of where we observe the final image
 z2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
@@ -37,7 +38,7 @@ for i in range(y_size):
         vy = 0
         vz = -1
         r, theta, phi, vr, vtheta, vphi = cart2sph(x,y,z,vx,vy,vz)
-        u = integrate_EOM2(np.array([r,theta,phi]), np.array([vr,vtheta,vphi]), t_max, MaxCount, R, z2, defaultTimeStep)
+        u = integrate_EOM2(np.array([r,theta,phi]), np.array([vr,vtheta,vphi]), t_max, MaxCount, Rs, z2, defaultTimeStep)
         U1 = sph2cart(u[1:,-2]) # penultimate ray positions and velocities
         U2 = sph2cart(u[1:,-1]) # ultimate ray positions and velocities
         if ((U2[2] - z2) >= 0):

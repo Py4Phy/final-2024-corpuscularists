@@ -1,18 +1,18 @@
 import numpy as np
 
-### Using geometrized units; c=G=1.
+### Using Planck units; c=G=hbar=kB=1.
 
 '''
 Initial Velocity       c
 BG Image Position      -100 m
 Target Plane           100 m
-Mass                   6.3419408698e9 m (=8.54e36 kg) Mass of Sagittarius A*. Note: Yes masses are in units of length here, so Rs=2M
+Mass                   3.9239e44 m (=8.54e36 kg) Mass of Sagittarius A*. Note: Yes masses are in units of length here, so Rs=2M
 '''
 
 # Default Values
 c = 1 # Speed of light
 G = 1 # Gravitational constant
-m = 6.3419408698e9 # Mass
+m = 3.9239e44 # Mass
 Rs = 2*m # Schwarzschild Radius
 
 # RK4
@@ -23,7 +23,7 @@ def rk4(u, f, t, h):
 	k4 = f(t + h, u + h*k3)
 	return u + h/6 * (k1 + 2*k2 + 2*k3 + k4)
 
-# Runge-Kutta-Fehlberg method (dynamic time step)
+# Runge-Kutta-Fehlberg method (dynamic time step) [DOESN'T WORK. DO NOT USE.]
 # Butcher tableau from, FORMULA 2 Table III in Fehlberg.
 def rk45(u, f, t, h, Tol = 1e-3):
 	A = np.array([0, 1/4, 3/8, 12/13, 1, 1/2])
@@ -56,6 +56,8 @@ def rk45(u, f, t, h, Tol = 1e-3):
 	else:
 		return hnew, uAvg
 
+# Richardson Extrapolation using RK4 with a full time step and two half time steps.
+# [This one works!]
 def rk4RE(u, f, t, h):
 	p = 4
 	eps_rel = 1e-8
@@ -78,20 +80,7 @@ def rk4RE(u, f, t, h):
 	else:
 		return hnew, rk4(u, f, t, hnew)
 
-	'''
-	while np.max(re)>2
-		hnew = hnew/re**(1/(p+1)) # time step adjustment
-		u1 = rk4(u, f, t, h/2)
-		u1 = rk4(u1, f, t+h/2, h/2)
-		u2 = rk4(u, f, t, h)
-		lte = 2**p/(2**p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
-		re = lte/(eps_rel*abs(u) + eps_abs)
-		re = np.where(re==0, 1, re) # Replace zeros with ones to avoid division by zero
-	'''
-
-
-
-# Acceleration testing
+# Test force
 def F(t, u):
 	x, y, z, vx, vy, vz = u
 	vx = x**2
@@ -112,17 +101,29 @@ def F_schwarz(t, u): # Note, this takes in SPHERICAL COORDINATES and outputs the
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
 
 # Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
-def cart2sph(x,y,z):
+def cart2sph(x,y,z,vx,vy,vz):
 	r = np.sqrt(x**2+y**2+z**2)
 	theta = np.arccos(z/r)
 	phi = np.sign(y)*np.arccos(x/np.sqrt(x**2+y**2))
-	return r,theta,phi
+	rho = np.sqrt(x**2+y**2)
+	sinTheta = rho/r
+	cosTheta = z/r
+	sinPhi = y/rho
+	cosPhi = x/rho
+	vr = (x*vx + y*vy + z*vz)/r
+	vtheta = (vx*cosTheta*cosPhi + vy*cosTheta*sinPhi - vz*sinTheta)/r
+	vphi = (-vx*sinPhi + vy*cosPhi)/rho
+	return r,theta,phi,vr,vtheta,vphi
 
-def sph2cart(r,theta,phi):
+def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 	x = r*np.sin(theta)*np.cos(phi)
 	y = r*np.sin(theta)*np.sin(phi)
-	z = r*cos(theta)
-	return x,y,z
+	z = r*np.cos(theta)
+	rho = r*np.sin(theta)
+	vx = vr*np.sin(theta)*np.cos(phi) + r*vtheta*np.cos(theta)*np.cos(phi) - rho*vphi*np.sin(phi)
+	vy = vr*np.sin(theta)*np.sin(phi) + r*vtheta*np.cos(theta)*np.sin(phi) + rho*vphi*np.cos(phi)
+	vz = vr*np.cos(theta) - np.sin(theta)
+	return x,y,z,vx,vy,vz
 
 def integrate_EOM(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=1):
 	t = 0

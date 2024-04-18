@@ -36,7 +36,8 @@ for i in range(y_size):
         vz = -1
         r, theta, phi, vr, vtheta, vphi = cart2sph(x,y,z,vx,vy,vz)
         u = integrate_EOM2(np.array([r,theta,phi]), np.array([vr,vtheta,vphi]), t_max, MaxCount, R, z2, defaultTimeStep)
-        U = sph2cart(u[1:,-2]) # penultimate ray positions and velocities
-        if ((U[2] - z2) >= 0):
-            k,l = findPixel(y_center, x_center, z2, pixel_length, U[:3], U[3:6])
+        U1 = sph2cart(u[1:,-2]) # penultimate ray positions and velocities
+        U2 = sph2cart(u[1:,-1]) # ultimate ray positions and velocities
+        if ((U2[2] - z2) >= 0):
+            k,l = findPixel(y_center, x_center, z2, pixel_length, U1[:3], U1[3:6])
             finalImage[i,j,:] = initialImage[k,l,:]

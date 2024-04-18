@@ -129,3 +129,16 @@ def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 5
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr
+
+def integrate_EOM2(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 50, 0], dtype = np.float64), t_max = 10, MaxCount = 10000, R = 1, bound = 10000, h=1e-3):
+	t = 0
+	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]]) #this integrator assumes that r0[0] = r in spherical coordinates
+	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
+	counter = 0
+	while (t < t_max) and (counter < MaxCount) and (u[0] > R) and (u[0] < bound):
+		t += h
+		counter += 1
+		h, u[:] = rk4(u, F, t, h)
+		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
+	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
+	return uArr

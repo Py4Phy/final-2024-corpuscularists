@@ -97,18 +97,19 @@ def cart2sph(x,y,z,vx=0,vy=0,vz):
 	theta = np.arccos(z/r)
 	phi = np.sign(y)*np.arccos(x/np.sqrt(x**2+y**2))
 	vr = (x*vx + y*vy + z*vz)/r
-	vtheta = np.sum(np.array(vx,vy,vz)*np.array(np.cos(theta)*np.cos(phi),np.cos(theta)*np.sin(phi),-np.sin(theta)))/r
+	vtheta = np.sum(np.array(vx,vy,vz)*np.array(np.cos(theta)*np.cos(phi),np.cos(theta)*np.sin(phi),-np.sin(theta)))/r # come back and make these trigonometric functions into functions of x, y, z
 	vphi = np.sum(np.array(vx,vy,vz)*np.array(-np.sin(phi),np.cos(phi),0))/np.sqrt(x**2 + y**2)
 	return r,theta,phi,vr,vtheta,vphi
 
 def sph2cart(r,theta,phi,vr,vtheta,vphi):
 	x = r*np.sin(theta)*np.cos(phi)
 	y = r*np.sin(theta)*np.sin(phi)
-	z = r*cos(theta)
-	vx = 
-	vy = 
-	vz = 
-	return x,y,z
+	z = r*np.cos(theta)
+	rho = r*np.sin(theta)
+	vx = vr*np.sin(theta)*np.cos(phi) + r*vtheta*np.cos(theta)*np.cos(phi) - rho*vphi*np.sin(phi)
+	vy = vr*np.sin(theta)*np.sin(phi) + r*vtheta*np.cos(theta)*np.sin(phi) + rho*vphi*np.cos(phi)
+	vz = vr*np.cos(theta) - np.sin(theta)
+	return x,y,z,vx,vy,vz
 
 def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 50, 0], dtype = np.float64), h=1e-3):
 	t = 0

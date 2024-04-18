@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
 
-
+### Using geometrized units; c=G=1.
 
 t = np.linspace(0,2.04,num=200)
 Z = np.zeros(t.shape)

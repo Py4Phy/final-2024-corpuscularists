@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
 from processImg import *
+import PIL
+from PIL import Image as Im
 
 ### Using geometrized units; c=G=1.
 
@@ -41,3 +43,7 @@ for i in range(y_size):
         if ((U2[2] - z2) >= 0):
             k,l = findPixel(y_center, x_center, z2, pixel_length, U1[:3], U1[3:6])
             finalImage[i,j,:] = initialImage[k,l,:]
+
+outputImage = Im.fromarray(finalImage)
+Im.show()
+Im.save('Lensed_Epic_Redpilled_Beckstein.png')

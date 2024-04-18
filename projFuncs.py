@@ -138,7 +138,7 @@ def integrate_EOM2(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 
 	while (t < t_max) and (counter < MaxCount) and (u[0] > R) and (u[0] < bound):
 		t += h
 		counter += 1
-		h, u[:] = rk4(u, F, t, h)
+		h, u[:] = rk4(u, F_schwarz, t, h)
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr

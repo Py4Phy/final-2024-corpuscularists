@@ -17,10 +17,10 @@ Rs = 2*m # Schwarzschild Radius
 
 # RK4
 def rk4(u, f, t, h):
-	k1 = f(t, u)
-	k2 = f(t + 0.5*h, u + 0.5*h*k1)
-	k3 = f(t + 0.5*h, u + 0.5*h*k2)
-	k4 = f(t + h, u + h*k3)
+	k1 = f(t, u, E, L)
+	k2 = f(t + 0.5*h, u + 0.5*h*k1, E, L)
+	k3 = f(t + 0.5*h, u + 0.5*h*k2, E, L)
+	k4 = f(t + h, u + h*k3, E, L)
 	return u + h/6 * (k1 + 2*k2 + 2*k3 + k4)
 
 # Runge-Kutta-Fehlberg method (dynamic time step) [DOESN'T WORK. DO NOT USE.]
@@ -58,17 +58,17 @@ def rk45(u, f, t, h, Tol = 1e-3):
 
 # Richardson Extrapolation using RK4 with a full time step and two half time steps.
 # [This one works!]
-def rk4RE(u, f, t, h):
+def rk4RE(u, f, t, h, E, L):
 	p = 4
 	eps_rel = 1e-8
 	eps_abs = 1e-15
 	# u1 using usual RK4 with two half-time steps
 
-	u1 = rk4(u, f, t, h/2)
-	u1 = rk4(u1, f, t+h/2, h/2)
+	u1 = rk4(u, f, t, h/2, E, L)
+	u1 = rk4(u1, f, t+h/2, h/2, E, L)
 
 	# u2 with one timestep
-	u2 = rk4(u, f, t, h)
+	u2 = rk4(u, f, t, h, E, L)
 
 	lte = 2**p/(2**p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
 	re = lte/(eps_rel*abs(u) + eps_abs)
@@ -76,9 +76,9 @@ def rk4RE(u, f, t, h):
 	hnew = h/re**(1/(p+1)) # time step adjustment
 
 	if np.max(re)>2:
-		return rk4RE(u, f, t, hnew)
+		return rk4RE(u, f, t, hnew, E, L)
 	else:
-		return hnew, rk4(u, f, t, hnew)
+		return hnew, rk4(u, f, t, hnew, E, L)
 
 # Test force
 def F(t, u):
@@ -90,13 +90,12 @@ def F(t, u):
 	return np.array([vx, vy, vz, ax, ay, az])
 
 # Equations of motion for the Schwarchild Metric
-def F_schwarz(t, u): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
+def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
 	r, theta, phi, vr, vtheta, vphi = u
 	# vel = np.array([vx, vy, vz])
 	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
-	atheta = 0
+	atheta = L/(r**2)
 	aphi = 0
-
 
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
 
@@ -125,15 +124,18 @@ def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 	vz = vr*np.cos(theta) - np.sin(theta)
 	return x,y,z,vx,vy,vz
 
-def integrate_EOM(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=1):
+def integrate_EOM(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
 	t = 0
 	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
 	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
 	counter = 0
 	MaxCount = 10000
+	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2])
+	E = np.sqrt( vr**2 + (1-Rs/sphICs[0])*(sphICs[0]**2)*(sphICs[4]**2 + (np.sin(sphICs[1])**2)*(sphICs[5]**2) ) )
+	L = (sphICs[0]**2)*sphICs[5]
 	while (t < 0.9) and counter < MaxCount:
 		counter += 1
-		h, u[:] = rk4RE(u, F, t, h)
+		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.

@@ -12,11 +12,11 @@ Mass                   3.9239e44 m (=8.54e36 kg) Mass of Sagittarius A*. Note: Y
 # Default Values
 c = 1 # Speed of light
 G = 1 # Gravitational constant
-m = 3.9239e44 # Mass
-Rs = 2*m # Schwarzschild Radius
+M = 3 #3.9239e44 # Mass of black hole [SET TO 3 FOR DEBUGGING]
+Rs = 2*M # Schwarzschild Radius
 
 # RK4
-def rk4(u, f, t, h):
+def rk4(u, f, t, h, E, L):
 	k1 = f(t, u, E, L)
 	k2 = f(t + 0.5*h, u + 0.5*h*k1, E, L)
 	k3 = f(t + 0.5*h, u + 0.5*h*k2, E, L)
@@ -93,8 +93,9 @@ def F(t, u):
 def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
 	r, theta, phi, vr, vtheta, vphi = u
 	# vel = np.array([vx, vy, vz])
+	vphi = L/(r**2)
 	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
-	atheta = L/(r**2)
+	atheta = 0
 	aphi = 0
 
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
@@ -103,7 +104,7 @@ def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outpu
 def cart2sph(x,y,z,vx,vy,vz):
 	r = np.sqrt(x**2+y**2+z**2)
 	theta = np.arccos(z/r)
-	phi = np.sign(y)*np.arccos(x/np.sqrt(x**2+y**2))
+	phi = np.arctan2(y,x)
 	rho = np.sqrt(x**2+y**2)
 	sinTheta = rho/r
 	cosTheta = z/r
@@ -124,22 +125,26 @@ def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 	vz = vr*np.cos(theta) - np.sin(theta)
 	return x,y,z,vx,vy,vz
 
-def integrate_EOM(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
+def A(r):
+	return 1-(2*M/r)
+
+def integrate_EOM(r0=np.array([-20, 6*M, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
 	t = 0
-	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
+	u = np.array(cart2sph(r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]))
+	print(u)
 	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
 	counter = 0
 	MaxCount = 10000
-	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2])
-	E = np.sqrt( vr**2 + (1-Rs/sphICs[0])*(sphICs[0]**2)*(sphICs[4]**2 + (np.sin(sphICs[1])**2)*(sphICs[5]**2) ) )
-	L = (sphICs[0]**2)*sphICs[5]
-	while (t < 0.9) and counter < MaxCount:
+	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2]) # For FIXED ICs, [r, theta, phi, vr, vtheta, vphi]
+	L = (sphICs[0]**2)*(sphICs[5]**2)
+	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
+	while (t < 500) and (u[0] > Rs) and counter < MaxCount:
 		counter += 1
 		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
-	return uArr
+	return uArr # [t, r, theta, phi, vr, vtheta, vphi]
 
 '''
 # Debugging

@@ -15,7 +15,9 @@ ucart = sph2cart(r[1],r[2],r[3],r[4],r[5],r[6])
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(r[0],r[1], 'b')
+ax.set_aspect('equal', adjustable='box')
+ax.add_patch(plt.Circle((0, 0), 6, color='black'))
+ax.plot(ucart[0],ucart[1], 'b')
 
 #fig2 = plt.figure()
 #ax2 = fig2.add_subplot(111)

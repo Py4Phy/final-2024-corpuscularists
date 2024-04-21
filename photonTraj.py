@@ -42,7 +42,7 @@ for i in range(y_size):
         U1 = sph2cart(u[1:,-2]) # penultimate ray positions and velocities
         U2 = sph2cart(u[1:,-1]) # ultimate ray positions and velocities
         if ((U2[2] - z2) >= 0):
-            k,l = findPixel(y_center, x_center, z2, pixel_length, U1[:3], U1[3:6])
+            k,l = findPixel(y_center, x_center, z2, pixel_length, U1[:3], U1[3:])
             finalImage[i,j,:] = initialImage[k,l,:]
 
 outputImage = Im.fromarray(finalImage)

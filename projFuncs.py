@@ -1,28 +1,29 @@
 import numpy as np
 
-### Using geometrized units; c=G=1.
+### Using Planck units; c=G=hbar=kB=1.
 
 '''
 Initial Velocity       c
 BG Image Position      -100 m
 Target Plane           100 m
-Mass                   6.3419408698e9 m (=8.54e36 kg) Note: Yes masses are in units of length here, so Rs=2M
+Mass                   3.9239e44 m (=8.54e36 kg) Mass of Sagittarius A*. Note: Yes masses are in units of length here, so Rs=2M
 '''
 
 # Default Values
 c = 1 # Speed of light
 G = 1 # Gravitational constant
+M = 3 #3.9239e44 # Mass of black hole [SET TO 3 FOR DEBUGGING]
+Rs = 2*M # Schwarzschild Radius
 
-# rk4
-def rk4(u, f, t, h):
-	"""Runge-Kutta RK4"""
-	k1 = f(t, u)
-	k2 = f(t + 0.5*h, u + 0.5*h*k1)
-	k3 = f(t + 0.5*h, u + 0.5*h*k2)
-	k4 = f(t + h, u + h*k3)
+# RK4
+def rk4(u, f, t, h, E, L):
+	k1 = f(t, u, E, L)
+	k2 = f(t + 0.5*h, u + 0.5*h*k1, E, L)
+	k3 = f(t + 0.5*h, u + 0.5*h*k2, E, L)
+	k4 = f(t + h, u + h*k3, E, L)
 	return u + h/6 * (k1 + 2*k2 + 2*k3 + k4)
 
-# Runge-Kutta-Fehlberg method (dynamic time step)
+# Runge-Kutta-Fehlberg method (dynamic time step) [DOESN'T WORK. DO NOT USE.]
 # Butcher tableau from, FORMULA 2 Table III in Fehlberg.
 def rk45(u, f, t, h, Tol = 1e-3):
 	A = np.array([0, 1/4, 3/8, 12/13, 1, 1/2])
@@ -51,28 +52,112 @@ def rk45(u, f, t, h, Tol = 1e-3):
 	#uHigh = 
 
 	if np.max(TE) > Tol:
-		return rk45(u, f, t, hnew, Tol)
+		return hnew, rk45(u, f, t, hnew, Tol)
 	else:
-		return uAvg
+		return hnew, uAvg
 
-# Acceleration
+# Richardson Extrapolation using RK4 with a full time step and two half time steps.
+# [This one works!]
+def rk4RE(u, f, t, h, E, L):
+	p = 4
+	eps_rel = 1e-8
+	eps_abs = 1e-15
+	# u1 using usual RK4 with two half-time steps
+
+	u1 = rk4(u, f, t, h/2, E, L)
+	u1 = rk4(u1, f, t+h/2, h/2, E, L)
+
+	# u2 with one timestep
+	u2 = rk4(u, f, t, h, E, L)
+
+	lte = 2**p/(2**p-1)*np.abs(u1-u2) # Local truncation error (local error estimate)
+	re = lte/(eps_rel*abs(u) + eps_abs)
+	re = np.max(np.where(re==0, 1, re)) # Replace zeros with ones to avoid division by zero
+	hnew = h/re**(1/(p+1)) # time step adjustment
+
+	if np.max(re)>2:
+		return rk4RE(u, f, t, hnew, E, L)
+	else:
+		return hnew, rk4(u, f, t, hnew, E, L)
+
+# Test force
 def F(t, u):
 	x, y, z, vx, vy, vz = u
-	# vel = np.array([vx, vy, vz])
-	ax, ay, az = np.array([0, -9.8, 0], dtype = np.float64)
+	vx = x**2
+	vy = 0
+	vz = 0
+	ax, ay, az = np.array([0, 0, 0], dtype = np.float64)
 	return np.array([vx, vy, vz, ax, ay, az])
 
-def integrate_EOM(r0=np.array([0, 0, 0], dtype = np.float64), v0=np.array([50, 50, 0], dtype = np.float64), h=5):
+# Equations of motion for the Schwarchild Metric
+def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
+	r, theta, phi, vr, vtheta, vphi = u
+	# vel = np.array([vx, vy, vz])
+	vphi = L/(r**2)
+	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
+	atheta = 0
+	aphi = 0
+
+	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
+
+# Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
+def cart2sph(x,y,z,vx,vy,vz):
+	r = np.sqrt(x**2+y**2+z**2)
+	theta = np.arccos(z/r)
+	phi = np.arctan2(y,x)
+	rho = np.sqrt(x**2+y**2)
+	sinTheta = rho/r
+	cosTheta = z/r
+	sinPhi = y/rho
+	cosPhi = x/rho
+	vr = (x*vx + y*vy + z*vz)/r
+	vtheta = (vx*cosTheta*cosPhi + vy*cosTheta*sinPhi - vz*sinTheta)/r
+	vphi = (-vx*sinPhi + vy*cosPhi)/rho
+	return r,theta,phi,vr,vtheta,vphi
+
+def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
+	x = r*np.sin(theta)*np.cos(phi)
+	y = r*np.sin(theta)*np.sin(phi)
+	z = r*np.cos(theta)
+	rho = r*np.sin(theta)
+	vx = vr*np.sin(theta)*np.cos(phi) + r*vtheta*np.cos(theta)*np.cos(phi) - rho*vphi*np.sin(phi)
+	vy = vr*np.sin(theta)*np.sin(phi) + r*vtheta*np.cos(theta)*np.sin(phi) + rho*vphi*np.cos(phi)
+	vz = vr*np.cos(theta) - np.sin(theta)
+	return x,y,z,vx,vy,vz
+
+def A(r):
+	return 1-(2*M/r)
+
+def integrate_EOM(r0=np.array([-20, 6*M, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
 	t = 0
-	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
+	u = np.array(cart2sph(r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]))
+	print(u)
 	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
 	counter = 0
 	MaxCount = 10000
-	while (t < 10) and counter < MaxCount:
-		t += h
+	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2]) # For FIXED ICs, [r, theta, phi, vr, vtheta, vphi]
+	L = (sphICs[0]**2)*(sphICs[5]**2)
+	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
+	while (t < 500) and (u[0] > Rs) and counter < MaxCount:
 		counter += 1
-		u[:] = rk45(u, F, t, h)
+		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
+		t += h
 		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
-	return uArr
+	return uArr # [t, r, theta, phi, vr, vtheta, vphi]
 
+'''
+# Debugging
+def testing(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=0.15):
+	t = 0
+	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
+	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
+	h, u[:] = rk4RE(u, F, t, h)
+
+	t += h
+	uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
+	print(uList)
+	return uList
+
+testing()
+'''

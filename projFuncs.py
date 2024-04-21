@@ -93,11 +93,11 @@ def F(t, u):
 def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
 	r, theta, phi, vr, vtheta, vphi = u
 	# vel = np.array([vx, vy, vz])
+	vtheta = 0
 	vphi = L/(r**2)
 	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
 	atheta = 0
 	aphi = 0
-
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
 
 # Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
@@ -128,7 +128,7 @@ def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 def A(r):
 	return 1-(2*M/r)
 
-def integrate_EOM(r0=np.array([-20, 6*M, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
+def integrate_EOM(r0=np.array([-20, 3*np.sqrt(3)*M, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.5): # Takes in CARTESIAN positions and velocities
 	t = 0
 	u = np.array(cart2sph(r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]))
 	print(u)

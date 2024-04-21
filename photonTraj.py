@@ -37,8 +37,7 @@ for i in range(y_size):
         vx = 0
         vy = 0
         vz = -1
-        r, theta, phi, vr, vtheta, vphi = cart2sph(x,y,z,vx,vy,vz)
-        u = integrate_EOM2(np.array([r,theta,phi]), np.array([vr,vtheta,vphi]), t_max, MaxCount, Rs, z2, defaultTimeStep)
+        u = integrate_EOM(np.array([x,y,z]), np.array([vx,vy,vz]))
         U1 = sph2cart(u[1:,-2]) # penultimate ray positions and velocities
         U2 = sph2cart(u[1:,-1]) # ultimate ray positions and velocities
         if ((U2[2] - z2) >= 0):

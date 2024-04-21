@@ -138,7 +138,7 @@ def integrate_EOM(r0=np.array([-20, 6*M, 0], dtype = np.float64), v0=np.array([1
 	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2]) # For FIXED ICs, [r, theta, phi, vr, vtheta, vphi]
 	L = (sphICs[0]**2)*(sphICs[5]**2)
 	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
-	while (t < 500) and (u[0] > Rs) and counter < MaxCount:
+	while (t < 500) and (u[0] > Rs) and (counter < MaxCount):
 		counter += 1
 		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h

@@ -9,11 +9,6 @@ from PIL import Image as Im
 
 ### Using geometrized units; c=G=1.
 
-t_max = 57
-defaultTimeStep = 1e-3
-MaxCount = 10000
-m = 3.9239e44 # Mass
-Rs = 2*m # Schwarzschild Radius
 pixel_length = 1
 z1 = -1000 # location of where we observe the final image
 z2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.

@@ -1,0 +1,147 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[fleqn]{nccmath}
+\usepackage{enumitem}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz,pgfplots,tikz-3dplot}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{braket}
+\usepackage{esvect,esint}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+\usepackage{titling}
+\usepackage{titlesec} % Section headings
+\titleformat*{\section}{\large\bfseries}
+\titleformat*{\subsection}{\normalsize\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+\titlespacing{\section}{0pt}{10pt}{0pt}
+\titlespacing{\subsection}{0pt}{10pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{10pt}{0pt}
+
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    margin=1in, % Margin size, obviously.
+    top = 1in,
+    bottom = 0.5in,
+}
+
+\usetikzlibrary{shapes, calc, arrows, arrows.meta, patterns, decorations.markings, decorations.pathmorphing, patterns.meta}
+
+\def\centerarc[#1](#2)(#3:#4:#5)% Syntax: [draw options] (center) (initial angle:final angle:radius)
+    { \draw[#1] ($(#2)+({#5*cos(#3)},{#5*sin(#3)})$) arc (#3:#4:#5); }
+
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\graphicspath{ {./Images/} }
+
+\definecolor{string}{RGB}{230, 219, 116}
+\definecolor{comment}{RGB}{117, 113, 94}
+\definecolor{normal}{RGB}{0,0,0}
+\definecolor{identifier}{RGB}{166, 226, 46}
+
+\lstset{
+	language=python,                			% choose the language of the code
+  	numbers=left,                   		% where to put the line-numbers
+  	stepnumber=1,                   		% the step between two line-numbers.        
+  	numbersep=5pt,                  		% how far the line-numbers are from the code
+  	numberstyle=\tiny\color{black}\ttfamily,
+  	showspaces=false,               		% show spaces adding particular underscores
+  	showstringspaces=false,         		% underline spaces within strings
+  	showtabs=false,                 		% show tabs within strings adding particular underscores
+  	tabsize=4,                      		% sets default tabsize to 2 spaces
+  	captionpos=b,                   		% sets the caption-position to bottom
+  	breaklines=true,                		% sets automatic line breaking
+  	title=\lstname,                 		% show the filename of files included with \lstinputlisting;
+  	basicstyle=\color{normal}\ttfamily,					% sets font style for the code
+  	keywordstyle=\color{magenta}\ttfamily,	% sets color for keywords
+  	stringstyle=\color{string}\ttfamily,		% sets color for strings
+  	commentstyle=\color{comment}\ttfamily,	% sets color for comments
+  	emph={format_string, eff_ana_bf, permute, eff_ana_btr},
+  	emphstyle=\color{identifier}\ttfamily
+}
+
+% Page Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead{}
+\fancyfoot[C]{\thepage}
+
+\setlength{\topmargin}{-1in}
+\fancypagestyle{ttl}{
+	\fancyhead{}
+	\fancyfoot{}
+	\fancyfoot[R]{\footnotesize\textit{\today}}
+}
+
+\numberwithin{equation}{section}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+% Set up Enumerate
+\setenumerate[0]{label=\textbf{\alph*.}}
+
+% Calculus Commands
+\newcommand{\infint}{\int_{-\infty}^{\infty}}
+\newcommand{\fd}[2]{\dfrac{\mathrm{d}^{#2}}{\mathrm{d}#1^{#2}}} % For full derivatives. \fd{variable}{number}
+\newcommand{\ffd}[3]{\dfrac{\mathrm{d}^{#3}#1}{\mathrm{d}#2^{#3}}} % For full derivatives with function. \ffd{function}{variable}{number}
+\newcommand{\pd}[2]{\dfrac{\partial^{#2}}{\partial #1^{#2}}} % For partial derivatives. \pd{variable}{number}
+\newcommand{\fpd}[3]{\dfrac{\partial^{#3}#1}{\partial #2^{#3}}} % For partial derivatives with function. \fpd{function}{variable}{number}
+
+
+% Number symbols
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+
+% Vector Commands
+\renewcommand{\vv}[1]{\bm{\mathrm{#1}}}
+\newcommand{\uvv}[1]{\hat{\bm{\mathrm{#1}}}}
+\newcommand{\dvv}[1]{\dot{\bm{\mathrm{#1}}}}
+\newcommand{\ddvv}[1]{\ddot{\bm{\mathrm{#1}}}}
+\newcommand{\grad}{\bm{\mathrm{\nabla}}}
+\newcommand{\abs}[1]{\left|#1\right|}
+
+% Trig Commands
+\newcommand{\arccot}{\operatorname{arccot}}
+\newcommand{\csch}{\operatorname{csch}}
+\newcommand{\sech}{\operatorname{sech}}
+
+% QED
+\newcommand{\qed}{\tag*{\(\square\)}}
+
+% Typing Commands
+\newcommand{\note}[1]{\color{red}#1\color{black}}
+
+\title{Gravitational Lensing for a Schwarchild Black Hole using Backward Ray Tracing\\[5pt] \small PHY 432 (Computational Methods in Physics) Final Project}
+\author{Ethan Pham, Jo Mama}
+\date{}
+
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{colorbrewer}
+
+\begin{document}
+\maketitle
+\thispagestyle{ttl}
+\begin{multicols}{2}
+[\hrule
+	\section*{Abstract}
+	Hello world!
+\vspace*{5pt}
+\hrule]
+\end{multicols}
+\end{document}

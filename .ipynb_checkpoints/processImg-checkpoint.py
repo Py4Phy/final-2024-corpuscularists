@@ -12,13 +12,13 @@ def imageTakeInner(image_file):
     return image
 
 # method to find where the ray passes through an image
-def findPixel(y_center, z_center, x_position, pixel_length, ri, v):
+def findPixel(y_center, x_center, z_position, pixel_length, ri, v):
     xi, yi, zi = ri # initial positions, should input the final positions BEFORE the ray passes through the image
     vx, vy, vz = v # velocities from the same time as the initial position
-    X = x_position - xi
-    zf = zi + X*(vz/vx)
-    yf = yi + X*(vy/vx)
-    j = (zf + z_center)/pixel_length
+    Z = z_position - zi
+    xf = xi + Z*(vx/vz)
+    yf = yi + Z*(vy/vz)
+    j = (xf + x_center)/pixel_length
     i = (yf + y_center)/pixel_length
     return i, j # y then x indices for the pixel
 

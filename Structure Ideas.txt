@@ -1,0 +1,27 @@
+This program needs to take in an image, backtrace a second image to the first image, and then spit out the newly determined second image.
+
+By default, we want the image and the new image to be on opposite sides of the black hole. It should be possible to draw a line between them which is perpendicular to both images, passes through both of their centers, and passes through the center of the black hole. The black hole's center will be considered the origin, for convenience.
+However, we'd also like to be able to move the images, and tilt them, as a stretch goal. This would probably be easiest to do with a matrix for rotating and deforming, and a 
+Working in cartesian coordinates to place the objects and initialize the rays seems easiest. We'll then convert to spherical coordinates and can convert back at the end. For the default arrangement of images and the black hole, it seems easiest to set the azimuthal angle to be the angle from the normal line to the final/new image we're making.
+
+
+
+
+
+____________________________________________________________________________________________________________________________________________
+
+NOTE: In the coordinates of an image, +x takes you to the right, +y takes you DOWN!!! (Shouldn't matter though, as long as we're consistent.
+
+____________________________________________________________________________________________________________________________________________
+
+
+
+
+
+The positions of each pixel can be arrange in cartesian space easily- set them all at the same place along the z axis (normal line to the images) and then use meshgrids to set the location for each pixel in the xy plane. Multiply the meshgrids by pixel length, and then subtract the center values for each meshgrid from each meshgrid. (Get the center values for the length of the image's array in that dimension multiplied by the pixel length and then divided by two.)
+
+To find where the final ray passes through, we first check for if the rays go past the plane of the initial image. If they do, we can see what pixel the ray passes through most closely. Do this finding where the line between the point before passing through the plane and the point just after passes through the plane. This location should be equal to:
+
+	pixel_length * meshgrid_integer_value - center_value
+
+knowing the pixel length and center value already, we can solve for the meshgrid value with simple algebra.

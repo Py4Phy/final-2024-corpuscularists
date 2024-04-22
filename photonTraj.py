@@ -3,5 +3,43 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
+from processImg import *
+import PIL
+from PIL import Image as Im
 
-### Using Planck units; c=G=hbar=kB=1.
+### Using geometrized units; c=G=1.
+
+pixel_length = 1
+x1 = -1000 # location of where we observe the final image
+x2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
+
+# set image position(s)
+initialImage = imageTakeInner('Epic_Redpilled_Beckstein.png')
+finalImage = np.zeros(initialImage.shape())
+y_size, z_size, x_size = initialImage.shape()
+y_positions = np.arange(0, y_size, 1)
+z_positions = np.arange(0, z_size, 1)
+y_positions = pixel_length*(y_positions - y_size/2)
+z_positions = pixel_length*(z_positions - z_size/2)
+y_center = pixel_length*y_size/2
+z_center = pixel_length*z_size/2
+
+for i in range(y_size):
+    for j in range(z_size):
+        z = z_positions[j]
+        y = y_positions[i]
+        x = x1
+        vx = 1
+        vy = 0
+        vz = 0
+        u = integrate_EOM(np.array([x,d,0]), np.array([vx,vy,vz])) # the arguments are rotated to be in the xy plane
+        U = sph2cart(u[1],u[2],u[3],u[4],u[5],u[6])
+        Upu = U[:][-2] # penultimate
+        Uu = U[:][-1] # ultimate
+        if ((Uu[0] - x2) >= 0):
+            k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3], Upu[3:])
+            finalImage[i][j][:] = initialImage[k][l][:]
+
+outputImage = Im.fromarray(finalImage[0][0][:3])
+Im.show()
+Im.save('Lensed_Epic_Redpilled_Beckstein.png')

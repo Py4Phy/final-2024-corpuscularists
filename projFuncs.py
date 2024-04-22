@@ -122,7 +122,7 @@ def sph2cart(r,theta,phi,vr,vtheta,vphi=0):
 	rho = r*np.sin(theta)
 	vx = vr*np.sin(theta)*np.cos(phi) + r*vtheta*np.cos(theta)*np.cos(phi) - rho*vphi*np.sin(phi)
 	vy = vr*np.sin(theta)*np.sin(phi) + r*vtheta*np.cos(theta)*np.sin(phi) + rho*vphi*np.cos(phi)
-	vz = vr*np.cos(theta) - np.sin(theta)
+	vz = vr*np.cos(theta) - r*vtheta*np.sin(theta)
 	return x,y,z,vx,vy,vz
 
 def A(r):

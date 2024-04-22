@@ -25,21 +25,15 @@ y_center = pixel_length*y_size/2
 z_center = pixel_length*z_size/2
 
 for i in range(y_size):
-    for j in range(x_size):
+    for j in range(z_size):
         z = z_positions[j]
         y = y_positions[i]
-        d = np.sqrt(y**2 + z**2)
-        COSPSI = y/d
-        SINPSI = z/d
         x = x1
         vx = 1
         vy = 0
         vz = 0
         u = integrate_EOM(np.array([x,d,0]), np.array([vx,vy,vz])) # the arguments are rotated to be in the xy plane
         U = sph2cart(u[1],u[2],u[3],u[4],u[5],u[6])
-        temporary = COSPSI*U[1] - SINPSI*U[2]
-        U[2][:] = SINPSI*U[1] + COSPSI*U[2]
-        U[1][:] = temporary
         Upu = U[:][-2] # penultimate
         Uu = U[:][-1] # ultimate
         if ((Uu[0] - x2) >= 0):

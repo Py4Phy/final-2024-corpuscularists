@@ -46,6 +46,6 @@ for i in range(y_size):
             k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3], Upu[3:])
             finalImage[i][j][:] = initialImage[k][l][:]
 
-outputImage = Im.fromarray(finalImage)
+outputImage = Im.fromarray(finalImage[0][0][:3])
 Im.show()
 Im.save('Lensed_Epic_Redpilled_Beckstein.png')

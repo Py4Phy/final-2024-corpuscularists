@@ -20,6 +20,8 @@ def findPixel(y_center, z_center, x_position, pixel_length, ri, v):
     yf = yi + X*(vy/vx)
     j = (zf + z_center)/pixel_length
     i = (yf + y_center)/pixel_length
+    j = int(j)
+    i = int(i)
     return i, j # y then x indices for the pixel
 
 # choose the image to use and the file to save to HERE

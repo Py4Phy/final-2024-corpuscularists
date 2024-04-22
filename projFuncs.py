@@ -101,7 +101,7 @@ def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outpu
 	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
 
 # Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
-def cart2sph(x,y,z,vx,vy,vz):
+def cart2sph(x=0,y=0,z=0,vx=0,vy=0,vz=0):
 	r = np.sqrt(x**2+y**2+z**2)
 	theta = np.arccos(z/r)
 	phi = np.arctan2(y,x)
@@ -113,12 +113,9 @@ def cart2sph(x,y,z,vx,vy,vz):
 	vr = (x*vx + y*vy + z*vz)/r
 	vtheta = (vx*cosTheta*cosPhi + vy*cosTheta*sinPhi - vz*sinTheta)/r
 	vphi = (-vx*sinPhi + vy*cosPhi)/rho
-	#vr = (x*vx + y*vy + z*vz)/r
-	#vtheta = ( z*(x*vx+y*vy)-(x**2+y**2)*vz )/((x**2+y**2+z**2)*rho)
-	#vphi = (vx*y-x*vy)/(x**2+y**2)
 	return r,theta,phi,vr,vtheta,vphi
 
-def sph2cart(r,theta,phi,vr,vtheta,vphi):
+def sph2cart(r=0,theta=0,phi=0,vr=0,vtheta=0,vphi=0):
 	x = r*np.sin(theta)*np.cos(phi)
 	y = r*np.sin(theta)*np.sin(phi)
 	z = r*np.cos(theta)
@@ -126,43 +123,45 @@ def sph2cart(r,theta,phi,vr,vtheta,vphi):
 	vx = vr*np.sin(theta)*np.cos(phi) + r*vtheta*np.cos(theta)*np.cos(phi) - rho*vphi*np.sin(phi)
 	vy = vr*np.sin(theta)*np.sin(phi) + r*vtheta*np.cos(theta)*np.sin(phi) + rho*vphi*np.cos(phi)
 	vz = vr*np.cos(theta) - r*vtheta*np.sin(theta)
-	#vx = vr*np.cos(theta)*np.cos(phi)+r*np.cos(theta)*np.sin(phi)*vphi+r*np.sin(theta)*np.cos(phi)*vtheta
-	#vy = vr*np.cos(theta)*np.sin(phi)-r*np.cos(theta)*np.cos(phi)*vphi+r*np.sin(theta)*np.sin(phi)*vtheta
-	#vz = vr*np.sin(theta)-r*np.cos(theta)*vtheta
 	return x,y,z,vx,vy,vz
+
+def rotX(V,angle): # Rotate about x axis by angle. Takes in V=[x,y,z]
+	xrot = V[0]
+	yrot = V[1]*np.cos(angle)-V[2]*np.sin(angle)
+	zrot = V[1]*np.sin(angle)+V[2]*np.cos(angle)
+	return np.array([xrot, yrot, zrot])
 
 def A(r):
 	return 1-(2*M/r)
 
-def integrate_EOM(r0=np.array([-100, 6*M, 0], dtype = np.float64), v0=np.array([-1, 0, 0], dtype = np.float64), h=0.25): # Takes in CARTESIAN positions and velocities
+def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.25): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
 	t = 0
-	u = np.array(cart2sph(r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]))
-	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
+	# Re-frame problem to solve in the correct plane.
+	uList = [[t, r0[0], r0[1], r0[2]]]
+	if r0[2] != 0:
+		rotateBy = np.arctan2(r0[2],r0[1])#-(np.pi/2)
+		r0rot = rotX(r0,-rotateBy)
+	else:
+		rotateBy = 0
+		r0rot = r0
+
+	sphICs = cart2sph(r0rot[0],r0rot[1],r0rot[2],v0[0],v0[1],v0[2]) # For FIXED ICs, [r, theta, phi, vr, vtheta, vphi]
+	u = np.array(sphICs)
 	counter = 0
 	MaxCount = 10000
-	sphICs = cart2sph(r0[0],r0[1],r0[2],v0[0],v0[1],v0[2]) # For FIXED ICs, [r, theta, phi, vr, vtheta, vphi]
 	L = (sphICs[0]**2)*(sphICs[5])
 	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
 	while (t < 100) and (u[0] > Rs) and counter < MaxCount:
 		counter += 1
 		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h
-		uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
+		uRotBack = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
+		uList.append([t, uRotBack[0], uRotBack[1], uRotBack[2]])
+
+		### Debugging:
+		#debugDelete = sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3]
+		#uList.append([t, debugDelete[0], debugDelete[1], debugDelete[2]])
+
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr # [t, r, theta, phi, vr, vtheta, vphi]
 
-'''
-# Debugging
-def testing(r0=np.array([1, 0, 0], dtype = np.float64), v0=np.array([0, 0, 0], dtype = np.float64), h=0.15):
-	t = 0
-	u = np.array([r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]])
-	uList = [[t, u[0], u[1], u[2], u[3], u[4], u[5]]]
-	h, u[:] = rk4RE(u, F, t, h)
-
-	t += h
-	uList.append([t, u[0], u[1], u[2], u[3], u[4], u[5]])
-	print(uList)
-	return uList
-
-testing()
-'''

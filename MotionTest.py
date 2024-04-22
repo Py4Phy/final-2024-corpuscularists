@@ -9,23 +9,35 @@ from projFuncs import *
 t = np.linspace(0,0.9,num=200)
 Z = np.zeros(t.shape)
 
-r = integrate_EOM()
-ucart = sph2cart(r[1],r[2],r[3],r[4],r[5],r[6])
-print(r[1])
+#Bound = 20
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+#ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111)
 ax.set_aspect('equal', adjustable='box')
-# ax.add_patch(plt.Circle((0, 0), 6, color='black')) # Circle in 2d
-ax.plot(ucart[0],ucart[1],ucart[2], 'b')
+#ax.axes.set_xlim3d(left=-Bound, right=Bound) 
+#ax.axes.set_ylim3d(bottom=-Bound, top=Bound) 
+#ax.axes.set_zlim3d(bottom=-Bound, top=Bound) 
+ax.set_xlabel(r'$X$')
+ax.set_ylabel(r'$Y$')
+#ax.set_zlabel(r'$Z$')
+ax.add_patch(plt.Circle((0, 0), 6, color='black')) # Circle in 2d
+#ax.plot(ucart[0],ucart[1],ucart[2], 'b')
+for i in range(50):
+	r = integrate_EOM(np.array([20, i-25, 0]))
+	ucart = sph2cart(r[1],r[2],r[3],r[4],r[5],r[6])
+	ax.plot(ucart[0],ucart[1], 'b')
+
 
 # draw sphere
-Radius = 6
-u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-x = Radius*np.cos(u)*np.sin(v)
-y = Radius*np.sin(u)*np.sin(v)
-z = Radius*np.cos(v)
-ax.plot_wireframe(x, y, z, color="r")
+#Radius = 6
+#u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+#x = Radius*np.cos(u)*np.sin(v)
+#y = Radius*np.sin(u)*np.sin(v)
+#z = Radius*np.cos(v)
+#ax.plot_surface(x, y, z, color="k", alpha = 0.5)
+
+
 
 #fig2 = plt.figure()
 #ax2 = fig2.add_subplot(111)

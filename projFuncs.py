@@ -137,7 +137,7 @@ def A(r):
 def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.25): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
 	t = 0
 	# Re-frame problem to solve in the correct plane.
-	uList = [[t, r0[0], r0[1], r0[2]]]
+	uList = [[t, r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]]]
 	if r0[2] != 0:
 		rotateBy = np.arctan2(r0[2],r0[1])#-(np.pi/2)
 		r0rot = rotX(r0,-rotateBy)
@@ -155,12 +155,9 @@ def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1,
 		counter += 1
 		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h
-		uRotBack = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
-		uList.append([t, uRotBack[0], uRotBack[1], uRotBack[2]])
-
-		### Debugging:
-		#debugDelete = sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3]
-		#uList.append([t, debugDelete[0], debugDelete[1], debugDelete[2]])
+		uRotBackPos = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
+		uRotBackVel = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[3:6],rotateBy)
+		uList.append([t, uRotBackPos[0], uRotBackPos[1], uRotBackPos[2], uRotBackVel[0], uRotBackVel[1], uRotBackVel[2]])
 
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr # [t, r, theta, phi, vr, vtheta, vphi]

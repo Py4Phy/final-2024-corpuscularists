@@ -22,9 +22,12 @@ ax.set_xlabel(r'$X$')
 ax.set_ylabel(r'$Y$')
 ax.set_zlabel(r'$Z$')
 # ax.add_patch(plt.Circle((0, 0), 6, color='black')) # Circle in 2d
-for i in range(50):
-	r = integrate_EOM(np.array([-20, i-25, i-25]))
-	ax.plot(r[1],r[2],r[3], 'b')
+for i in range(6):
+	for j in range(6):
+		r = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]))
+		ax.plot(r[1],r[2],r[3], 'b')
+		R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
+		ax.scatter(R[1],R[2],R[3], color='r', s=4)
 
 
 # draw sphere

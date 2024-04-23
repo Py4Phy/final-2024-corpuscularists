@@ -135,7 +135,7 @@ def A(r):
 	return 1-(2*M/r)
 
 # EOM. traj=0 keeps trajectory be default, traj=1 only keeps the last two points.
-def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), traj=0, Bound = np.array([20,20,20]),h=1): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
+def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), traj=0, Bound = np.array([200,200,200]),h=1): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
 	if traj !=0 and traj !=1:
 		print("Invalid trajectory option! Please input 0 to save whole trajectory and 1 to keep the last two points.")
 	t = 0

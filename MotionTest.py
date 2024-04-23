@@ -9,7 +9,7 @@ from projFuncs import *
 t = np.linspace(0,0.9,num=200)
 Z = np.zeros(t.shape)
 
-Bound = 20
+Bound = 40
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -28,14 +28,20 @@ for i in range(6):
 	for j in range(6):
 		r = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]))
 		ax.plot(r[1],r[2],r[3], 'b')
-		R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
-		ax.scatter(R[1],R[2],R[3], color='r', s=4)
+		#R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
+		#ax.scatter(R[1],R[2],R[3], color='r', s=4)
 '''
 
+for i in range(50):
+	r = integrate_EOM(np.array([-100, 5*(i-25), 0]))
+	ax.plot(r[1],r[2],r[3], 'b')
+
+'''
 r = integrate_EOM(np.array([-10, 10, 10]))
 ax.plot(r[1],r[2],r[3], 'b')
-R = integrate_EOM(np.array([-10, 10, 10]),np.array([1, 0, 0], dtype = np.float64))
+R = integrate_EOM(np.array([-10, 10, 10]),np.array([1, 0, 0], dtype = np.float64), 1)
 ax.scatter(R[1],R[2],R[3], color='r', s=4)
+'''
 
 # draw sphere
 Radius = 6

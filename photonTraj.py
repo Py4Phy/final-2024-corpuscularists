@@ -33,12 +33,11 @@ for i in range(y_size):
         vx = 1
         vy = 0
         vz = 0
-        u = integrate_EOM(np.array([x,d,0]), np.array([vx,vy,vz])) # the arguments are rotated to be in the xy plane
-        U = sph2cart(u[1],u[2],u[3],u[4],u[5],u[6])
-        Upu = U[:][-2] # penultimate
-        Uu = U[:][-1] # ultimate
-        if ((Uu[0] - x2) >= 0):
-            k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3], Upu[3:])
+        u = integrate_EOM(np.array([x,y,z]), np.array([vx,vy,vz]))
+        Upu = u[1:][-2] # penultimate
+        Uu = u[1:][-1] # ultimate
+        if ((Uu[0][0] - x2) >= 0):
+            k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3][0], Upu[3:][0])
             finalImage[i][j][:] = initialImage[k][l][:]
 
 outputImage = Im.fromarray(finalImage[0][0][:3])

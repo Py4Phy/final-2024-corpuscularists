@@ -10,14 +10,14 @@ from PIL import Image as Im
 ### Using geometrized units; c=G=1.
 
 pixel_length = 1
-x1 = -1000 # location of where we observe the final image
-x2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
+x1 = -100 # location of where we observe the final image
+x2 = 100 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
 
 # set image position(s)
-initialImage = imageTakeInner('small_test_image.png')
-finalImage = np.zeros(initialImage.shape())
+initialImage = imageTakeInner('pixil-frame-0.png')
+finalImage = np.zeros(initialImage.shape)
 print(finalImage.shape)
-y_size, z_size, x_size = initialImage.shape()
+y_size, z_size, x_size = initialImage.shape
 y_positions = np.arange(0, y_size, 1)
 z_positions = np.arange(0, z_size, 1)
 y_positions = pixel_length*(y_positions - y_size/2)
@@ -25,22 +25,23 @@ z_positions = pixel_length*(z_positions - z_size/2)
 y_center = pixel_length*y_size/2
 z_center = pixel_length*z_size/2
 
+
 for i in range(y_size):
     for j in range(z_size):
+        print("Y: "+str(i)+"/"+str(y_size)+", Z: "+str(j)+"/"+str(z_size))
         z = z_positions[j]
         y = y_positions[i]
         x = x1
         vx = 1
         vy = 0
         vz = 0
-        u = integrate_EOM(np.array([x,d,0]), np.array([vx,vy,vz])) # the arguments are rotated to be in the xy plane
-        U = sph2cart(u[1],u[2],u[3],u[4],u[5],u[6])
-        Upu = U[:][-2] # penultimate
-        Uu = U[:][-1] # ultimate
-        if ((Uu[0] - x2) >= 0):
-            k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3], Upu[3:])
+        u = integrate_EOM(np.array([x,y,z]), np.array([vx,vy,vz]), 1, np.array([100,50,50]))
+        Upu = u[1:][-2] # penultimate
+        Uu = u[1:][-1] # ultimate
+        if ((Uu[0][0] - x2) >= 0):
+            k,l = findPixel(y_center, z_center, x2, pixel_length, Upu[:3][0], Upu[3:][0])
             finalImage[i][j][:] = initialImage[k][l][:]
 
 outputImage = Im.fromarray(finalImage[0][0][:3])
-Im.show()
+outputImage.show()
 # Im.save('Lensed_Epic_Redpilled_Beckstein.png')

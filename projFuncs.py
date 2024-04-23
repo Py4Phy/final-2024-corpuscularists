@@ -60,7 +60,7 @@ def rk45(u, f, t, h, Tol = 1e-3):
 # [This one works!]
 def rk4RE(u, f, t, h, E, L):
 	p = 4
-	eps_rel = 1e-8
+	eps_rel = 1e-7
 	eps_abs = 1e-15
 	# u1 using usual RK4 with two half-time steps
 
@@ -135,7 +135,7 @@ def A(r):
 	return 1-(2*M/r)
 
 # EOM. traj=0 keeps trajectory be default, traj=1 only keeps the last two points.
-def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), traj=0, h=0.25): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
+def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), traj=0, Bound = np.array([20,20,20]),h=1): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
 	if traj !=0 and traj !=1:
 		print("Invalid trajectory option! Please input 0 to save whole trajectory and 1 to keep the last two points.")
 	t = 0
@@ -155,7 +155,7 @@ def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1,
 	L = (sphICs[0]**2)*(sphICs[5])
 	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
 
-	while (t < 100) and (u[0] > Rs) and counter < MaxCount:
+	while (u[0] > Rs) and (np.abs(sph2cart(u[0],u[1],u[2])[0])<Bound[0]) and (np.abs(sph2cart(u[0],u[1],u[2])[1])<Bound[1]) and (np.abs(sph2cart(u[0],u[1],u[2])[2])<Bound[2]) and counter < MaxCount:
 		counter += 1
 		if traj == 1: # Save previous point
 			uRotBackPosA = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)

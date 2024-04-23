@@ -15,9 +15,9 @@ x2 = 1000 # location of the initial image. Keep it a positive number and the fin
 
 # set image position(s)
 initialImage = imageTakeInner('small_test_image.png')
-finalImage = np.zeros(initialImage.shape())
+finalImage = np.zeros(initialImage.shape)
 print(finalImage.shape)
-y_size, z_size, x_size = initialImage.shape()
+y_size, z_size, x_size = initialImage.shape
 y_positions = np.arange(0, y_size, 1)
 z_positions = np.arange(0, z_size, 1)
 y_positions = pixel_length*(y_positions - y_size/2)

@@ -134,7 +134,10 @@ def rotX(V,angle): # Rotate about x axis by angle. Takes in V=[x,y,z]
 def A(r):
 	return 1-(2*M/r)
 
-def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), h=0.25): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
+# EOM. traj=0 keeps trajectory be default, traj=1 only keeps the last two points.
+def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1, 0, 0], dtype = np.float64), traj=0, h=0.25): # Takes in CARTESIAN positions and velocities (also returns these in CARTESIAN)
+	if traj !=0 and traj !=1:
+		print("Invalid trajectory option! Please input 0 to save whole trajectory and 1 to keep the last two points.")
 	t = 0
 	# Re-frame problem to solve in the correct plane.
 	uList = [[t, r0[0], r0[1], r0[2], v0[0], v0[1], v0[2]]]
@@ -151,14 +154,23 @@ def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1,
 	MaxCount = 10000
 	L = (sphICs[0]**2)*(sphICs[5])
 	E = np.sqrt(sphICs[3]**2 + A(sphICs[0])*((L/sphICs[0])**2))
+
 	while (t < 100) and (u[0] > Rs) and counter < MaxCount:
 		counter += 1
+		if traj == 1: # Save previous point
+			uRotBackPosA = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
+			uRotBackVelA = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[3:6],rotateBy)
+			uList[:] = [[t, uRotBackPosA[0], uRotBackPosA[1], uRotBackPosA[2], uRotBackVelA[0], uRotBackVelA[1], uRotBackVelA[2]]]
+
 		h, u[:] = rk4RE(u, F_schwarz, t, h, E, L)
 		t += h
-		uRotBackPos = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
-		uRotBackVel = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[3:6],rotateBy)
-		uList.append([t, uRotBackPos[0], uRotBackPos[1], uRotBackPos[2], uRotBackVel[0], uRotBackVel[1], uRotBackVel[2]])
+
+		uRotBackPosB = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
+		uRotBackVelB = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[3:6],rotateBy)
+		if traj == 1:
+			uList.append(np.concatenate(([t],uRotBackPosB,uRotBackVelB)))
+		else:
+			uList.append(np.concatenate(([t],uRotBackPosB,uRotBackVelB)))
 
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
-	return uArr # [t, r, theta, phi, vr, vtheta, vphi]
-
+	return uArr # [t, x, y, z, vx, vy, vz]

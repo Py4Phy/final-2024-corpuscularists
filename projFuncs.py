@@ -167,10 +167,7 @@ def integrate_EOM(r0=np.array([-100, 0, 0], dtype = np.float64), v0=np.array([1,
 
 		uRotBackPosB = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[0:3],rotateBy)
 		uRotBackVelB = rotX(sph2cart(u[0],u[1],u[2],u[3],u[4],u[5])[3:6],rotateBy)
-		if traj == 1:
-			uList.append(np.concatenate(([t],uRotBackPosB,uRotBackVelB)))
-		else:
-			uList.append(np.concatenate(([t],uRotBackPosB,uRotBackVelB)))
+		uList.append(np.concatenate(([t],uRotBackPosB,uRotBackVelB)))
 
 	uArr = np.transpose(np.array([uList])) # transposed to make positions easier to grab.
 	return uArr # [t, x, y, z, vx, vy, vz]

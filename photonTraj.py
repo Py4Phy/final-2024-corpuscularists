@@ -14,8 +14,9 @@ x1 = -1000 # location of where we observe the final image
 x2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
 
 # set image position(s)
-initialImage = imageTakeInner('Epic_Redpilled_Beckstein.png')
+initialImage = imageTakeInner('small_test_image.png')
 finalImage = np.zeros(initialImage.shape())
+print(finalImage.shape)
 y_size, z_size, x_size = initialImage.shape()
 y_positions = np.arange(0, y_size, 1)
 z_positions = np.arange(0, z_size, 1)
@@ -42,4 +43,4 @@ for i in range(y_size):
 
 outputImage = Im.fromarray(finalImage[0][0][:3])
 Im.show()
-Im.save('Lensed_Epic_Redpilled_Beckstein.png')
+# Im.save('Lensed_Epic_Redpilled_Beckstein.png')

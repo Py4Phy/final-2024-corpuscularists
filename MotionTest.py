@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
 
-
-
 t = np.linspace(0,0.9,num=200)
 Z = np.zeros(t.shape)
 

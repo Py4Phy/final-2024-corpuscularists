@@ -19,10 +19,13 @@ z_bound = 100
 
 # set image position(s)
 initialImage = imageTakeInner('pixil-frame-0.png', dtype="int")
-finalImage = np.zeros(initialImage.shape)
+y_sizei, z_sizei, x_sizei = initialImage.shape
+y_sizef = 10
+z_sizef = 10
+x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
+finalImage = np.zeros(y_sizef, z_sizef, x_sizef, dtype="int")
 
 # intial image position values
-y_sizei, z_sizei, x_sizei = initialImage.shape
 y_positionsi = np.arange(0, y_sizei, 1)
 z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
@@ -32,7 +35,6 @@ z_centeri = pixel_lengthi*z_sizei/2
 
 
 # final image position values
-y_sizef, z_sizef, x_sizef = finalImage.shape
 y_positionsf = np.arange(0, y_sizef, 1)
 z_positionsf = np.arange(0, z_sizef, 1)
 y_positionsf = pixel_lengthf*(y_positionsf - y_sizef/2)

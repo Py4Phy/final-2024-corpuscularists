@@ -3,11 +3,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
+from tqdm import tqdm
 
 t = np.linspace(0,0.9,num=200)
 Z = np.zeros(t.shape)
 
-Bound = 40
+Bound = 2000
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -29,10 +30,16 @@ for i in range(6):
 		#R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
 		#ax.scatter(R[1],R[2],R[3], color='r', s=4)
 '''
-
-for i in range(50):
-	r = integrate_EOM(np.array([-100, 5*(i-25), 0]))
-	ax.plot(r[1],r[2],r[3], 'b')
+y_size = 1920
+z_size = 1080
+width = 50
+height = 50
+y_positions = np.arange(0, y_size, 1)
+z_positions = np.arange(0, z_size, 1)
+for i in tqdm(range(int(y_size/2)-int(height/2),int(y_size/2)+int(height/2),1)):
+	for j in range(int(z_size/2)-int(width/2),int(z_size/2)+int(width/2),1):
+		r = integrate_EOM(np.array([-100,i,j]), np.array([1,0,0]),0,np.array([110,y_size + 1,z_size + 1]))
+		ax.plot(r[1],r[2],r[3], color='b')
 
 '''
 r = integrate_EOM(np.array([-10, 10, 10]))

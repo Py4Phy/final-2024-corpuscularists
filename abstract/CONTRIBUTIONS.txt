@@ -1,2 +1,3 @@
-Summarize the contributions of the teammates here.
+Jo Mama: largely made photonTraj and processImg, which take in the initial image and then, after calling the integrator function from projFuncs, determine the pixel values for each pixel of the final image, and then spit out/save the final image. Also expanded the functions for converting between spherical and cartesian coordinates to convert between velocities in addition to positions.
 
+Ethan Pham: 

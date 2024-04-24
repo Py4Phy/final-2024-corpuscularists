@@ -17,13 +17,13 @@ x2 = 1000 # location of the initial image. Keep it a positive number and the fin
 y_bound = 100
 z_bound = 100
 
-# set image position(s)
-initialImage = imageTakeInner('pixil-frame-0.png', dtype="int")
+# set up images
+initialImage = imageTakeInner('pixil-frame-0.png')
 y_sizei, z_sizei, x_sizei = initialImage.shape
 y_sizef = 10
 z_sizef = 10
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
-finalImage = np.zeros(y_sizef, z_sizef, x_sizef, dtype="int")
+finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
 # intial image position values
 y_positionsi = np.arange(0, y_sizei, 1)

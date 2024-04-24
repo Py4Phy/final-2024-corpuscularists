@@ -16,7 +16,7 @@ y_bound = 100
 z_bound = 100
 
 # set image position(s)
-initialImage = imageTakeInner('pixil-frame-0.png')
+initialImage = imageTakeInner('pixil-frame-0.png',dtype="int")
 finalImage = np.zeros(initialImage.shape)
 print(finalImage.shape)
 y_size, z_size, x_size = initialImage.shape

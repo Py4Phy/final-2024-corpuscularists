@@ -3,76 +3,66 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib import cm # Color maps
 from projFuncs import *
-from processImg import *
-import PIL
-from PIL import Image as Im
 from tqdm import tqdm
 
-### Using geometrized units; c=G=1.
+t = np.linspace(0,0.9,num=200)
+Z = np.zeros(t.shape)
 
-pixel_lengthi = 1 # pixel length for the initial image
-pixel_lengthf = 1 # pixel length for the final image
-x1 = -10 # location of where we observe the final image
-x2 = 1000 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
-# make SURE that |x2| > |x1| so that using the bounds argument in the integrating function works.
-y_bound = 100
-z_bound = 100
+Bound = 2000
 
-<<<<<<< HEAD
-# set image position(s)
-imageName = "pixil-frame-0.png"
-initialImage = imageTakeInner(imageName)
-=======
-# set up images
-initialImage = imageTakeInner('pixil-frame-0.png')
->>>>>>> main
-y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 10
-z_sizef = 10
-x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
-<<<<<<< HEAD
-finalImage = np.zeros(y_sizef, z_sizef, x_sizef, dtype="int")
-=======
-finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
->>>>>>> main
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+#ax = fig.add_subplot(111)
+ax.set_aspect('equal', adjustable='box')
+ax.axes.set_xlim3d(left=-Bound, right=Bound) 
+ax.axes.set_ylim3d(bottom=-Bound, top=Bound) 
+ax.axes.set_zlim3d(bottom=-Bound, top=Bound) 
+ax.set_xlabel(r'$X$')
+ax.set_ylabel(r'$Y$')
+ax.set_zlabel(r'$Z$')
+# ax.add_patch(plt.Circle((0, 0), 6, color='black')) # Circle in 2d
 
-# intial image position values
-y_positionsi = np.arange(0, y_sizei, 1)
-z_positionsi = np.arange(0, z_sizei, 1)
-y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
-z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
-y_centeri = pixel_lengthi*y_sizei/2
-z_centeri = pixel_lengthi*z_sizei/2
+'''
+for i in range(6):
+    for j in range(6):
+        r = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]))
+        ax.plot(r[1],r[2],r[3], 'b')
+        #R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
+        #ax.scatter(R[1],R[2],R[3], color='r', s=4)
+'''
+y_size = 1920
+z_size = 1080
+width = 50
+height = 50
+y_positions = np.arange(0, y_size, 1)
+z_positions = np.arange(0, z_size, 1)
+for i in tqdm(range(int(y_size/2)-int(height/2),int(y_size/2)+int(height/2),1)):
+    for j in range(int(z_size/2)-int(width/2),int(z_size/2)+int(width/2),1):
+        r = integrate_EOM(np.array([-100,i,j]), np.array([1,0,0]),0,np.array([110,y_size + 1,z_size + 1]))
+        ax.plot(r[1],r[2],r[3], color='b')
+
+'''
+r = integrate_EOM(np.array([-10, 10, 10]))
+ax.plot(r[1],r[2],r[3], 'b')
+R = integrate_EOM(np.array([-10, 10, 10]),np.array([1, 0, 0], dtype = np.float64), 1)
+ax.scatter(R[1],R[2],R[3], color='r', s=4)
+'''
+
+# draw sphere
+Radius = 6
+u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+x = Radius*np.cos(u)*np.sin(v)
+y = Radius*np.sin(u)*np.sin(v)
+z = Radius*np.cos(v)
+ax.plot_surface(x, y, z, color="k", alpha = 0.5)
 
 
-# final image position values
-y_positionsf = np.arange(0, y_sizef, 1)
-z_positionsf = np.arange(0, z_sizef, 1)
-y_positionsf = pixel_lengthf*(y_positionsf - y_sizef/2)
-z_positionsf = pixel_lengthf*(z_positionsf - z_sizef/2)
-y_centerf = pixel_lengthf*y_sizef/2
-z_centerf = pixel_lengthf*z_sizef/2
 
-print("Started.")
-<<<<<<< HEAD
-for i in tqdm(range(y_sizef)):
-=======
-for i in range(y_sizef):
->>>>>>> main
-    for j in range(z_sizef):
-        z = z_positionsf[j]
-        y = y_positionsf[i]
-        x = x1
-        vx = 1
-        vy = 0
-        vz = 0
-        u = integrate_EOM(np.array([x,y,z]), np.array([vx,vy,vz]),1,np.array([x2,y_bound + 1,z_bound + 1]))
-        Uu = u[1:,-1,0] # ultimate
-        if ((Uu[0] - x2) >= 0):
-            k,l = findPixel(y_centeri, z_centeri, x2, pixel_lengthi, Uu[:3], Uu[3:])
-            if ((k > -1) and (k < y_sizei) and (l > -1) and (l < z_sizei)):
-                finalImage[i,j,:] = initialImage[k,l,:]
-print("Finished.")
+#fig2 = plt.figure()
+#ax2 = fig2.add_subplot(111)
+#ax2.plot(r[0],np.abs((-(1/(r[0]-1)))-r[1]), color='g')
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot(50*t,50*t-(0.5*9.8*t**2),Z, color='r')
+# ax.plot(r[1],r[2],r[3], color='b')
 
-plt.imshow(finalImage)
-plt.savefig("Lensed_"+imageName)
+plt.show()

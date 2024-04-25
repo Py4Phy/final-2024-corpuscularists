@@ -2,9 +2,4 @@
 *.log
 *.out
 *.synctex*
-<<<<<<< HEAD
-*.mp4
 video/
-=======
-video/
->>>>>>> Ethan

@@ -8,7 +8,7 @@ from tqdm import tqdm
 t = np.linspace(0,0.9,num=200)
 Z = np.zeros(t.shape)
 
-Bound = 2000
+Bound = 100
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -22,24 +22,15 @@ ax.set_ylabel(r'$Y$')
 ax.set_zlabel(r'$Z$')
 # ax.add_patch(plt.Circle((0, 0), 6, color='black')) # Circle in 2d
 
-'''
-for i in range(6):
-    for j in range(6):
-        r = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]))
-        ax.plot(r[1],r[2],r[3], 'b')
+
+for i in range(20):
+    #for j in range(6):
+    r = integrate_EOM(np.array([-30, 2*(i-10), 0]))
+    ax.plot(r[1],r[2],r[3], 'b')
         #R = integrate_EOM(np.array([-20, 5*(i-2.5), 5*(j-2.5)]),np.array([1, 0, 0], dtype = np.float64), 1)
         #ax.scatter(R[1],R[2],R[3], color='r', s=4)
-'''
-y_size = 1920
-z_size = 1080
-width = 50
-height = 50
-y_positions = np.arange(0, y_size, 1)
-z_positions = np.arange(0, z_size, 1)
-for i in tqdm(range(int(y_size/2)-int(height/2),int(y_size/2)+int(height/2),1)):
-    for j in range(int(z_size/2)-int(width/2),int(z_size/2)+int(width/2),1):
-        r = integrate_EOM(np.array([-100,i,j]), np.array([1,0,0]),0,np.array([110,y_size + 1,z_size + 1]))
-        ax.plot(r[1],r[2],r[3], color='b')
+
+
 
 '''
 r = integrate_EOM(np.array([-10, 10, 10]))

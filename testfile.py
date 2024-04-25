@@ -5,7 +5,7 @@ from natsort import natsorted
 # Make video from the images
 vidFolder='video'
 video_name = 'lensing.mp4'
-fps = 4
+fps = 8
 
 
 images = [img for img in os.listdir(vidFolder) if img.endswith(".png")]

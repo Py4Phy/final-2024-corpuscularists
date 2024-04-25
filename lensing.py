@@ -17,24 +17,24 @@ from natsort import natsorted
 
 pixel_lengthi = 1 # pixel length for the initial image
 pixel_lengthf = 1 # pixel length for the final image
-x1 = -50 # location of where we observe the final image
+print(int(np.ceil(2.598*Rs+5)))
+x1 = -20 # location of where we observe the final image
 x2 = 50 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
 # make SURE that |x2| > |x1| so that using the bounds argument in the integrating function works.
-y_bound = 100
-z_bound = 100
-
+y_bound = 1000
+z_bound = 1000
 
 # Video parameters
 vidFolder = "video"
-fps = 4
+fps = 8
 video_name = 'lensing.mp4'
 
 # set up images
 imageName = "deepfield_small.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 100
-z_sizef = 100
+y_sizef = 250
+z_sizef = 250
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -44,10 +44,12 @@ z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
 z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
 
-nFrames = 40 # Number of frames
-pixelStepFrame = 2 # how many pixels to move each frame. Must be an integer.
+nFrames = 80 # Number of frames
+pixelStepFrame = 1 # how many pixels to move each frame. Must be an integer.
+plt.style.use('dark_background')
 
 print("Started.")
+
 for f in tqdm(range(nFrames)):
     y_centeri = pixel_lengthi*y_sizei/2
     z_centeri = pixel_lengthi*z_sizei/2-(nFrames*pixelStepFrame)/2+f*pixelStepFrame
@@ -58,6 +60,7 @@ for f in tqdm(range(nFrames)):
     y_positionsf = pixel_lengthf*(y_positionsf - y_sizef/2)
     z_positionsf = pixel_lengthf*(z_positionsf - z_sizef/2)
 
+    # for shift in range(30)
     y_centerf = pixel_lengthf*y_sizef/2
     z_centerf = (pixel_lengthf*z_sizef/2)-(nFrames*pixelStepFrame)/2+f*pixelStepFrame
 
@@ -82,7 +85,8 @@ for f in tqdm(range(nFrames)):
     ax.add_patch(plt.Circle((z_sizef/2,y_sizef/2), Rs, color='red'))
     ax.add_patch(plt.Circle((z_sizef/2,y_sizef/2), 1.5*Rs, color='red', fill=False, linewidth=2.0, linestyle=':'))
     ax.add_patch(plt.Circle((z_sizef/2,y_sizef/2), 2.598*Rs, color='red', fill=False, linewidth=2.0, linestyle='--'))
-    plt.savefig(str(vidFolder)+"/Lensed_"+str(frame)+"_"+imageName)
+    plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
+    plt.close(fig)
 
 print("Frames Done.")
 print("Making Video...")
@@ -92,7 +96,7 @@ images = [img for img in os.listdir(vidFolder) if img.endswith(".png")]
 images = natsorted(images) # Sort the frames in the correct order
 frame = cv2.imread(os.path.join(vidFolder, images[0]))
 height, width, layers = frame.shape
-video = cv2.VideoWriter(video_name, 0, 1, (width,height))
+video = cv2.VideoWriter(video_name, 0, fps, (width,height))
 for image in images:
     video.write(cv2.imread(os.path.join(vidFolder, image)))
 

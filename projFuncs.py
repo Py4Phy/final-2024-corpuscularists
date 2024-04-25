@@ -73,7 +73,7 @@ def F(t, u):
 	vy = 0
 	vz = 0
 	ax, ay, az = np.array([0, 0, 0], dtype = np.float64)
-	return np.array([vx, vy, vz, ax, ay, az])
+	return np.array([vx, vy, vz, ax, ay, az], dtype = np.float64)
 
 # Equations of motion for the Schwarchild Metric
 def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outputs them in SPHERICAL COORDINATES
@@ -84,7 +84,7 @@ def F_schwarz(t, u, E, L): # Note, this takes in SPHERICAL COORDINATES and outpu
 	ar = -Rs/(2*r**2)*((L/r)**2)+((L**2)/(r**3))*(1-(Rs/r))
 	atheta = 0
 	aphi = 0
-	return np.array([vr, vtheta, vphi, ar, atheta, aphi])
+	return np.array([vr, vtheta, vphi, ar, atheta, aphi], dtype = np.float64)
 
 # Using physics convention. Theta = polar angle [0,pi] (measured from z axis), Phi = Azimuthal angle [0,2*pi](measured AROUND z axis; in xy plane)
 def cart2sph(x=0,y=0,z=0,vx=0,vy=0,vz=0):
@@ -115,7 +115,7 @@ def rotX(V,angle): # Rotate about x axis by angle. Takes in V=[x,y,z]
 	xrot = V[0]
 	yrot = V[1]*np.cos(angle)-V[2]*np.sin(angle)
 	zrot = V[1]*np.sin(angle)+V[2]*np.cos(angle)
-	return np.array([xrot, yrot, zrot])
+	return np.array([xrot, yrot, zrot], dtype = np.float64)
 
 def A(r):
 	return 1-(2*M/r)

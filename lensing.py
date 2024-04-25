@@ -13,11 +13,13 @@ import cv2
 import os
 from natsort import natsorted
 
+# Parallelize
+from joblib import Parallel, delayed
+
 ### Using geometrized units; c=G=1.
 
 pixel_lengthi = 1 # pixel length for the initial image
 pixel_lengthf = 1 # pixel length for the final image
-print(int(np.ceil(2.598*Rs+5)))
 x1 = -20 # location of where we observe the final image
 x2 = 50 # location of the initial image. Keep it a positive number and the final image at a negative location for later parts of this program to work.
 # make SURE that |x2| > |x1| so that using the bounds argument in the integrating function works.
@@ -33,8 +35,8 @@ video_name = 'lensing.mp4'
 imageName = "deepfield_small.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 250
-z_sizef = 250
+y_sizef = 300
+z_sizef = 300
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -50,7 +52,8 @@ plt.style.use('dark_background')
 
 print("Started.")
 
-for f in tqdm(range(nFrames)):
+# for f in tqdm(range(nFrames)):
+def process(f):
     y_centeri = pixel_lengthi*y_sizei/2
     z_centeri = pixel_lengthi*z_sizei/2-(nFrames*pixelStepFrame)/2+f*pixelStepFrame
 
@@ -87,6 +90,8 @@ for f in tqdm(range(nFrames)):
     ax.add_patch(plt.Circle((z_sizef/2,y_sizef/2), 2.598*Rs, color='red', fill=False, linewidth=2.0, linestyle='--'))
     plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
     plt.close(fig)
+
+Parallel(n_jobs=-2)(delayed(process)(k) for k in range(nFrames))
 
 print("Frames Done.")
 print("Making Video...")

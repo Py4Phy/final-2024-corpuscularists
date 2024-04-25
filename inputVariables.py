@@ -10,5 +10,5 @@ Mass                   3.9239e44 m (=8.54e36 kg) Mass of Sagittarius A*. Note: Y
 # Default Values
 c = 1 # Speed of light
 G = 1 # Gravitational constant
-M = 2 #3.9239e44 # Mass of black hole [SET TO 3 FOR DEBUGGING]
+M = 5 #3.9239e44 # Mass of black hole [SET TO 3 FOR DEBUGGING]
 Rs = 2*M # Schwarzschild Radius

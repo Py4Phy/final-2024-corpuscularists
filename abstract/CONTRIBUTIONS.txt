@@ -4,5 +4,7 @@ Ethan Pham: Responsible for most pf projFuncs.py:
 - RK4 with dynamic timestepping (using a special case of richardson extrapolation)
 - The integrator for the equations of motion for light geodesics around the Schwarchild black hole
 - The positional conversion between cartesian and spherical coordinates
+- Added video function for moving perspective
+- Parallelized the code (via frame calculation)
 Also responsible for photonTraj.py, using the implemented EOMs to simulate photon trajectories and compare them with analytical solutions based on specific initial conditions. Did the video portion of lensing.py as well.
 

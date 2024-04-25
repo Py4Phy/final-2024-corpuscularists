@@ -23,11 +23,3 @@ def findPixel(y_center, z_center, x_position, pixel_length, ri, v):
     j = int(j)
     i = int(i)
     return i, j # y then x indices for the pixel
-
-# choose the image to use and the file to save to HERE
-image_file = 'stock-photo-young-attractive-dangerous-woman-aiming-at-gold-fish-55445056.jpg' # input file
-array_file = 'usable.npy' # 0utput file with the format .npy
-
-image = Im.open(image_file)
-image = np.array(image)
-np.save(array_file, image)

@@ -49,7 +49,7 @@ ax.scatter(R[1],R[2],R[3], color='r', s=4)
 '''
 
 # draw sphere
-Radius = 6
+Radius = Rs
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 x = Radius*np.cos(u)*np.sin(v)
 y = Radius*np.sin(u)*np.sin(v)

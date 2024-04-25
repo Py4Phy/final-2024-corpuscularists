@@ -29,14 +29,14 @@ z_bound = 1000
 # Video parameters
 vidFolder = "video"
 fps = 8
-video_name = 'lensing.mp4'
+video_name = 'figures/lensing.mp4'
 
 # set up images
-imageName = "deepfield_small.png"
+imageName = "Epic_Redpilled_Beckstein.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 250
-z_sizef = 250
+y_sizef = 25
+z_sizef = 25
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -46,8 +46,9 @@ z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
 z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
 
-nFrames = 60 # Number of frames
-pixelStepFrame = 1 # how many pixels to move each frame. Must be an integer.
+nFrames = 1 # Number of frames
+pixelStepFrame = 0 # how many pixels to move each frame. Must be an integer.
+
 plt.style.use('dark_background')
 
 print("Started.")
@@ -82,6 +83,7 @@ def process(f):
                 if ((k > -1) and (k < y_sizei) and (l > -1) and (l < z_sizei)):
                     finalImage[i,j,:] = initialImage[k,l,:]
 
+    plt.style.use('dark_background')
     fig,ax = plt.subplots(1)
     ax = plt.gca()
     ax.imshow(finalImage)
@@ -91,12 +93,13 @@ def process(f):
     plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
     plt.close(fig)
 
-Parallel(n_jobs=-2)(delayed(process)(k) for k in tqdm(range(nFrames)))
+Parallel(n_jobs=-3)(delayed(process)(k) for k in tqdm(range(nFrames)))
 
 print("Frames Done.")
 print("Making Video...")
 
 # Make video from the images
+'''
 images = [img for img in os.listdir(vidFolder) if img.endswith(".png")]
 images = natsorted(images) # Sort the frames in the correct order
 frame = cv2.imread(os.path.join(vidFolder, images[0]))
@@ -107,5 +110,7 @@ for image in images:
 
 cv2.destroyAllWindows()
 video.release()
+
+'''
 
 print("Finished.")

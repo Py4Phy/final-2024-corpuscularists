@@ -35,8 +35,8 @@ video_name = 'lensing.mp4'
 imageName = "deepfield_small.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 300
-z_sizef = 300
+y_sizef = 250
+z_sizef = 250
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -46,7 +46,7 @@ z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
 z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
 
-nFrames = 80 # Number of frames
+nFrames = 60 # Number of frames
 pixelStepFrame = 1 # how many pixels to move each frame. Must be an integer.
 plt.style.use('dark_background')
 
@@ -91,7 +91,7 @@ def process(f):
     plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
     plt.close(fig)
 
-Parallel(n_jobs=-2)(delayed(process)(k) for k in range(nFrames))
+Parallel(n_jobs=-2)(delayed(process)(k) for k in tqdm(range(nFrames)))
 
 print("Frames Done.")
 print("Making Video...")

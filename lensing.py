@@ -16,6 +16,7 @@ from natsort import natsorted
 # Parallelize
 from joblib import Parallel, delayed
 
+
 ### Using geometrized units; c=G=1.
 
 pixel_lengthi = 1 # pixel length for the initial image
@@ -32,11 +33,11 @@ fps = 8
 video_name = 'figures/lensing.mp4'
 
 # set up images
-imageName = "deepfield.png"
+imageName = "deepfield_small.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 500
-z_sizef = 500
+y_sizef = 100
+z_sizef = 100
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -46,14 +47,13 @@ z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
 z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
 
-nFrames = 60 # Number of frames
+nFrames = 40 # Number of frames
 pixelStepFrame = 2 # how many pixels to move each frame. Must be an integer.
 
 plt.style.use('dark_background')
 
 print("Started.")
 
-# for f in tqdm(range(nFrames)):
 def process(f):
     y_centeri = pixel_lengthi*y_sizei/2
     z_centeri = pixel_lengthi*z_sizei/2-(nFrames*pixelStepFrame)/2+f*pixelStepFrame+30
@@ -68,7 +68,7 @@ def process(f):
     y_centerf = pixel_lengthf*y_sizef/2
     z_centerf = (pixel_lengthf*z_sizef/2)-(nFrames*pixelStepFrame)/2+f*pixelStepFrame
 
-    for i in tqdm(range(y_sizef)):
+    for i in range(y_sizef):
         for j in range(z_sizef):
             z = z_positionsf[j]
             y = y_positionsf[i]
@@ -82,7 +82,6 @@ def process(f):
                 k,l = findPixel(y_centeri, z_centeri, x2, pixel_lengthi, Uu[:3], Uu[3:])
                 if ((k > -1) and (k < y_sizei) and (l > -1) and (l < z_sizei)):
                     finalImage[i,j,:] = initialImage[k,l,:]
-
     plt.style.use('dark_background')
     fig,ax = plt.subplots(1)
     ax = plt.gca()
@@ -93,7 +92,7 @@ def process(f):
     plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
     plt.close(fig)
 
-Parallel(n_jobs=40)(delayed(process)(k) for k in tqdm(range(nFrames)))
+Parallel(n_jobs=4, verbose = 2)(delayed(process)(k) for k in tqdm(range(nFrames)))
 
 print("Frames Done.")
 print("Making Video...")

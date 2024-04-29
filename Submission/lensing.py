@@ -77,7 +77,7 @@ def process(f):
             vy = 0
             vz = 0
             u = integrate_EOM(np.array([x,y,z]), np.array([vx,vy,vz]),1,np.array([x2,y_bound + 1,z_bound + 1]))
-            Uu = u[1:,-1,0] # ultimate
+            Uu = u[1:,-2,0] # ultimate
             if ((Uu[0] - x2) >= 0):
                 k,l = findPixel(y_centeri, z_centeri, x2, pixel_lengthi, Uu[:3], Uu[3:])
                 if ((k > -1) and (k < y_sizei) and (l > -1) and (l < z_sizei)):

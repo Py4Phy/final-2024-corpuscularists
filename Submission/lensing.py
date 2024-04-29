@@ -29,15 +29,15 @@ z_bound = 2000
 
 # Video parameters
 vidFolder = "video"
-fps = 8
+fps = 6
 video_name = 'figures/lensing.mp4'
 
 # set up images
-imageName = "deepfield_small.png"
+imageName = "NCG4013Hubble_Small.png"
 initialImage = imageTakeInner(imageName)
 y_sizei, z_sizei, x_sizei = initialImage.shape
-y_sizef = 100
-z_sizef = 100
+y_sizef = 250
+z_sizef = 250
 x_sizef = x_sizei # needs to be the same to transfer the information between the matrices.
 finalImage = np.zeros(np.array([y_sizef, z_sizef, x_sizef]), dtype='int')
 
@@ -47,7 +47,7 @@ z_positionsi = np.arange(0, z_sizei, 1)
 y_positionsi = pixel_lengthi*(y_positionsi - y_sizei/2)
 z_positionsi = pixel_lengthi*(z_positionsi - z_sizei/2)
 
-nFrames = 40 # Number of frames
+nFrames = 60 # Number of frames
 pixelStepFrame = 2 # how many pixels to move each frame. Must be an integer.
 
 plt.style.use('dark_background')
@@ -55,8 +55,8 @@ plt.style.use('dark_background')
 print("Started.")
 
 def process(f):
-    y_centeri = pixel_lengthi*y_sizei/2
-    z_centeri = pixel_lengthi*z_sizei/2-(nFrames*pixelStepFrame)/2+f*pixelStepFrame+30
+    y_centeri = pixel_lengthi*y_sizei/2+(nFrames*pixelStepFrame)/2-f*pixelStepFrame
+    z_centeri = pixel_lengthi*z_sizei/2-(nFrames*pixelStepFrame)/2+f*pixelStepFrame
 
     # final image position values
     y_positionsf = np.arange(0, y_sizef, 1)
@@ -92,7 +92,7 @@ def process(f):
     plt.savefig(str(vidFolder)+"/Lensed_"+str(f)+"_"+imageName)
     plt.close(fig)
 
-Parallel(n_jobs=4, verbose = 2)(delayed(process)(k) for k in tqdm(range(nFrames)))
+Parallel(n_jobs=3, verbose = 2)(delayed(process)(k) for k in tqdm(range(nFrames)))
 
 print("Frames Done.")
 print("Making Video...")
